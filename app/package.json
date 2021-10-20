@@ -1,0 +1,8 @@
+{
+  "name": "pyrate",
+  "version": "1.0.0",
+  "description": "Dashboard that will be used to orchestrate the backend actions",
+  "main": "index.js",
+  "author": "Hevon Gordon",
+  "license": "MIT"
+}
