@@ -2,12 +2,12 @@ import json
 from flask import Response
 
 
-def index():
-    return "Hello, World!"
+def product_index():
+    return "Hello, Product World!"
 
 
-def test():
-    data = {"hello": "world", "number": 3}
+def product_test():
+    data = {"product": "world", "world": 3}
     js = json.dumps(data)
 
     resp = Response(js, status=200, mimetype="application/json")

@@ -1,6 +1,11 @@
 def routes():
-    return {
-        'GET': {
-            '/': 'index',
-        }
-    }
+    return [
+        {'methods': ['GET'],
+         'path': '/',
+         'controller': 'index'
+         },
+        {'methods': ['GET'],
+         'path': '/test',
+         'controller': 'test'
+         }
+    ]
