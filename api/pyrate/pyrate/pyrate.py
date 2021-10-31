@@ -11,6 +11,8 @@ import os
 
 from app import app
 
+from db import db
+
 
 def get_services():
     """
@@ -46,6 +48,7 @@ def get_service_method_by_name(service_name, method_name):
 
 
 def setup_app():
+    db.create_all()
     services = get_services()
     for service in services:
         _routes = get_routes_for_service(service)
@@ -56,8 +59,10 @@ def setup_app():
                 path = '/' + path
             methods = route.get('methods')
             view = get_service_method_by_name(service, controller)
-            app.add_url_rule('/{service}{path}'.format(service=service,
-                             path=path), view_func=view, methods=methods)
+            url = '/{service}{path}'.format(service=service,
+                                            path=path)
+            app.add_url_rule(
+                url, provide_automatic_options=True, view_func=view, methods=methods,)
 
 
 if __name__ == "__main__":
