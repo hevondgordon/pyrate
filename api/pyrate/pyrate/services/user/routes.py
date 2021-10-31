@@ -2,10 +2,18 @@ def routes():
     return [
         {'methods': ['GET'],
          'path': '/',
-         'controller': 'index'
+         'controller': 'find'
          },
         {'methods': ['GET'],
-         'path': '/test',
-         'controller': 'test'
+         'path': '/<int:id>',
+         'controller': 'findOne'
+         },
+        {'methods': ['POST'],
+         'path': '/',
+         'controller': 'create'
+         },
+        {'methods': ['PUT'],
+         'path': '/<int:id>',
+         'controller': 'update'
          }
     ]
