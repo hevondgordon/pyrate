@@ -42,8 +42,7 @@ def create():
 
 def update(*args, **kwargs):
     data = json.loads(request.data.decode('UTF-8'))
-    data |= kwargs
-    id = User.query.update(**data)
-    user = User.query.filter_by(id=id).first().to_dict()
+    user = User.query.filter_by(id=kwargs.get('id')).first()
+    user.update(**data)
     return Response(json.dumps(user),
                     status=200, mimetype="application/json")
