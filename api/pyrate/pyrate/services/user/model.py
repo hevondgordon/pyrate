@@ -22,6 +22,6 @@ class User(db.Model):
         db.session.commit()
 
     def __repr__(self):
-        name = '{first_name} {last_name} - (email)'.format(
+        name = '{first_name} {last_name} - ({email})'.format(
             first_name=self.first_name, last_name=self.last_name, email=self.email)
         return 'User: {name}'.format(name=name)
