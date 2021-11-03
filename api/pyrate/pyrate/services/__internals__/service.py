@@ -1,7 +1,6 @@
 import json
 import os
 from flask import Response, request
-from services.user.model import User
 import services
 
 
