@@ -14,6 +14,19 @@ from app import app
 from db import db
 
 
+def import_models():
+    """
+    Import all models from the services directory.
+    """
+    services = get_services()
+    for service in services:
+        if '__internals__' not in service:
+            importlib.import_module(
+                'services.{service}.model'.format(
+                    service=service)
+            )
+
+
 def get_services():
     """
     Returns a list of all folders in the services directory.
@@ -21,7 +34,8 @@ def get_services():
     return [
         package
         for package in os.listdir(services.__path__[0])
-        if os.path.isdir(os.path.join(services.__path__[0], package)) and package != '__pycache__'
+        if os.path.isdir(os.path.join(services.__path__[0], package))
+        and package != '__pycache__'
     ]
 
 
@@ -48,6 +62,7 @@ def get_service_method_by_name(service_name, method_name):
 
 
 def setup_app():
+    import_models()
     db.create_all()
     services = get_services()
     for service in services:

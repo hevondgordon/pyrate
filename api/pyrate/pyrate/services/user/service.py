@@ -10,7 +10,7 @@ def find():
     return response
 
 
-def findOne(*args, **kwargs):
+def find_one(*args, **kwargs):
     user = User.query.filter_by(**kwargs).first().to_dict()
     return Response(json.dumps(user),
                     status=200, mimetype="application/json")
@@ -18,18 +18,9 @@ def findOne(*args, **kwargs):
 
 def create():
     data = json.loads(request.data.decode('UTF-8'))
-    first_name = data.get('first_name')
-    last_name = data.get('last_name')
     email = data.get('email')
-    username = data.get('username', None)
-    password = data.get('password')
-
     user = User(
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        username=username,
-        password=password
+        **data
     )
 
     user.save_to_db()

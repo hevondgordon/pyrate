@@ -6,7 +6,7 @@ def routes():
          },
         {'methods': ['GET'],
          'path': '/<int:id>',
-         'controller': 'findOne'
+         'controller': 'find_one'
          },
         {'methods': ['POST'],
          'path': '/',
