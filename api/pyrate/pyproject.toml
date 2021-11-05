@@ -12,6 +12,7 @@ SQLAlchemy = "^1.4.26"
 Flask-SQLAlchemy = "^2.5.1"
 psycopg2-binary = "^2.9.1"
 python-decouple = "^3.5"
+gunicorn = "^20.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

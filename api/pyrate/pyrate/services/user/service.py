@@ -4,8 +4,11 @@ from services.user.model import User
 
 
 def find():
-    json_users = json.dumps(User.query.all())
-    response = Response(json_users,
+    users = User.query.all()
+
+    json_users = [user.to_dict() for user in users]
+
+    response = Response(json.dumps(json_users),
                         status=200, mimetype="application/json")
     return response
 
