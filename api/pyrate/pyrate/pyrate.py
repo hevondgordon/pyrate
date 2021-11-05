@@ -15,16 +15,19 @@ from db import db
 
 
 class Pyrate:
+    app = None
+
     def __init__(self, app=None):
         if app is not None:
             self.init_app(app)
 
     def init_app(self, app):
-        self.app = app
-        self.app.add_url_rule(
-            '/',
-            view_func=self.index,
-            methods=['GET'])
+        if self.app is None:
+            self.app = app
+            self.app.add_url_rule(
+                '/',
+                view_func=self.index,
+                methods=['GET'])
 
     def index(self):
         return Response(
@@ -107,14 +110,18 @@ class Pyrate:
         services = self.get_services()
         for service in services:
             self.add_service_to_app(service)
+        return self.app
 
-    def run(self):
+    def run(self, *args, **kwargs):
         """
         Run the app.
         """
-        self.setup_app()
-        self.app.run(debug=True)
+        self.app.run(**kwargs)
+        return self.app
+
+
+configured_app = Pyrate(app).setup_app()
 
 
 if __name__ == "__main__":
-    Pyrate(app).run()
+    configured_app.run(debug=True)
