@@ -4,6 +4,8 @@ import services
 
 from flask import Response, request
 
+RESTART_SERVICE_COMMAND = 'supervisorctl restart pyrate'
+
 
 def get_full_service_path(directory_name):
     return os.path.join(services.__path__[0], directory_name)
@@ -164,6 +166,8 @@ def generate_service():
             status = 500
             response['error'] = {}
             response['error']['message'] = str(e)
+        else:
+            os.system(RESTART_SERVICE_COMMAND)
     else:
         status = 400
         response['error'] = {}
