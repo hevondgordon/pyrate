@@ -2,18 +2,18 @@ def routes():
     return [
         {'methods': ['GET'],
          'path': '/',
-         'controller': 'find'
+         'controller': 'find_user'
          },
         {'methods': ['GET'],
          'path': '/<int:id>',
-         'controller': 'find_one'
+         'controller': 'find_single_user'
          },
         {'methods': ['POST'],
          'path': '/',
-         'controller': 'create'
+         'controller': 'create_user'
          },
         {'methods': ['PUT'],
          'path': '/<int:id>',
-         'controller': 'update'
+         'controller': 'update_user'
          }
     ]

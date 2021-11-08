@@ -26,15 +26,17 @@ from services.{service_name}.model import {model_name}
 
 
 def find_{service_name}():
-    json_users = json.dumps({model_name}.query.all())
-    response = Response(json_users,
+    {entity}s = {model_name}.query.all()
+
+    json_{entity}s = [entity.to_dict() for entity in {entity}s]
+    response = Response(json.dumps(json_{entity}s),
                         status=200, mimetype="application/json")
     return response
 
 
-def find_one_{service_name}(*args, **kwargs):
-    entity = {model_name}.query.filter_by(**kwargs).first().to_dict()
-    return Response(json.dumps(entity),
+def find_single_{service_name}(*args, **kwargs):
+    {entity} = {model_name}.query.filter_by(**kwargs).first().to_dict()
+    return Response(json.dumps({entity}),
                     status=200, mimetype="application/json")
 
 
@@ -44,22 +46,26 @@ def create_{service_name}():
         **data
     )
 
-    entity = {service_name}.save_to_db()
+    {entity} = {service_name}.save_to_db()
 
-    committed_entity = {model_name}.query.filter_by(id=entity.id).first().to_dict()
-    response = Response(json.dumps(committed_entity),
+    response = Response(json.dumps({entity}.to_dict()),
                         status=200, mimetype="application/json")
     return response
 
 
 def update_{service_name}(*args, **kwargs):
     data = json.loads(request.data.decode('UTF-8'))
-    entity = {model_name}.query.filter_by(id=kwargs.get('id')).first()
-    entity.update(**data)
-    return Response(json.dumps(entity),
+    {entity} = {model_name}.query.filter_by(id=kwargs.get('id')).first()
+    keys = dict.keys(data)
+    for key in keys:
+        if key == 'id':
+            continue
+        setattr({entity}, key, data[key])
+    {entity}.save_to_db()
+    return Response(json.dumps({entity}.to_dict()),
                     status=200, mimetype="application/json")
 
-    '''.format(service_name=service_name, model_name=model_name)
+    '''.format(service_name=service_name, model_name=model_name, entity=model_name.lower())
 
     with open(service_path, 'w') as service_file:
         service_file.write(service_template)
@@ -78,7 +84,7 @@ def routes():
         },
         {'methods': ['GET'],
         'path': '/<int:id>',
-        'controller': 'find_one_{service_name}'
+        'controller': 'find_single_{service_name}'
         },
         {'methods': ['POST'],
         'path': '/',
@@ -104,26 +110,19 @@ def hydrate_model(model_name, columns):
     properties += 'id = db.Column(db.Integer, primary_key=True)\n\t'
 
     for column in columns:
-        properties += f'{column.get("name")} = db.Column(db.{column.get("type")}, nullable=False)\n\t'
+        properties += f'{column.get("name")} = db.Column(db.{column.get("type")}, nullable={column.get("nullable", True)})\n\t'
     properties = properties.replace('\t', '    ')
     model_template = '''
 from db import db
+from services.__internals__.models import PyrateBaseModel
 
 
-class {model_name}(db.Model):
+class {model_name}(db.Model, PyrateBaseModel):
     {properties}
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
         return self
-    
-    def to_dict(self):
-        data_dict = {}
-        data = [{column.name: getattr(self, column.name)}
-                for column in self.__table__.columns]
-        for d in data:
-            data_dict |= d
-        return data_dict
 
     def __repr__(self):
         return self.id
