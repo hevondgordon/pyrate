@@ -147,11 +147,26 @@ def create_directory(directory_name):
         print('Error: Creating service. ' + directory_name)
 
 
+def get_external_services():
+    """
+    Returns a list of all folders in the services directory.
+    """
+    external_services = [
+        package
+        for package in os.listdir(services.__path__[0])
+        if os.path.isdir(os.path.join(services.__path__[0], package))
+        and package != '__pycache__' and package != '__internals__'
+    ]
+
+    return Response(json.dumps(external_services),
+                    status=200, mimetype="application/json")
+
+
 def generate_service():
     data = json.loads(request.data.decode('UTF-8'))
     columns = data.get('columns', [])
     status = 200
-    response = {}
+    response = {'success': True}
     service_name = data.get('service_name', None)
     if service_name is not None:
         try:
@@ -161,7 +176,7 @@ def generate_service():
             create_service_file(service_name)
             create_route(service_name)
         except Exception as e:
-            print(e)
+            response['success'] = False
             status = 500
             response['error'] = {}
             response['error']['message'] = str(e)
@@ -169,6 +184,7 @@ def generate_service():
             os.system(RESTART_SERVICE_COMMAND)
     else:
         status = 400
+        response['success'] = False
         response['error'] = {}
         response['error']['message'] = 'Service name is required.'
 
