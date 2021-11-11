@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { pyrateInternalAPIClient } from '../../../data/utils'
 
-export const ROUTE = 'api/services/'
+export const ROUTE = '/api/services/'
 
 type Data = {
   name: string
