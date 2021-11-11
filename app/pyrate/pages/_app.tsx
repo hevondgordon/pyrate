@@ -2,7 +2,7 @@ import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { ChakraProvider } from "@chakra-ui/react"
 
-import SimpleSidebar from '../components/SideBar'
+import SideBarLayout from '../components/SideBarLayout'
 
 // import { useRouter } from 'next/router'
 
@@ -10,9 +10,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   // const router = useRouter()
   // const pathname = router.pathname
     return <ChakraProvider>
-    <SimpleSidebar>
+    <SideBarLayout>
       <Component {...pageProps} />
-    </SimpleSidebar>
+    </SideBarLayout>
   </ChakraProvider>
   
 }
