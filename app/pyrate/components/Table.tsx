@@ -8,44 +8,53 @@ import {
     Td,
     TableCaption,
     Box,
+    Link,
 } from "@chakra-ui/react"
 
+export interface Data {
+    [key: string]: unknown
+}
+export interface TableData {
+    [key: string]: string | number | Data
+}
 export interface TableProps {
-    dataSource: unknown[],
-    columns: unknown[],
+    dataSource: TableData[],
+    columns: string[],
+    name: string
 }
 
 export default function TableComponent(props: TableProps) {
+    const { dataSource, columns, name } = props
     return (
         <Box>
-        <Table variant="simple" style={{'color': '#5d5d5d', 'borderColor': '#5d5d5d'}}>
-            <TableCaption style={{'color': '#5d5d5d'}}>Imperial to metric conversion factors</TableCaption>
-            <Thead>
-                <Tr>
-                    <Th>To convert</Th>
-                    <Th>into</Th>
-                    <Th isNumeric>multiply by</Th>
-                </Tr>
-            </Thead>
-            <Tbody>
-                <Tr>
-                    <Td>inches</Td>
-                    <Td>millimetres (mm)</Td>
-                    <Td isNumeric>25.4</Td>
-                </Tr>
-                <Tr>
-                    <Td>feet</Td>
-                    <Td>centimetres (cm)</Td>
-                    <Td isNumeric>30.48</Td>
-                </Tr>
-                <Tr>
-                    <Td>yards</Td>
-                    <Td>metres (m)</Td>
-                    <Td isNumeric>0.91444</Td>
-                </Tr>
-            </Tbody>
-            
-        </Table>
+            <Table variant="simple" style={{ 'color': '#5d5d5d', 'borderColor': '#5d5d5d' }}>
+                <TableCaption style={{ 'color': '#5d5d5d' }}>Imperial to metric conversion factors</TableCaption>
+                <Thead>
+                    <Tr>
+                        {columns?.map((column) => (<Th key={column}>{column}</Th>))}
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    {dataSource?.map((data) => {
+                        return (
+                            <Tr key={data.id as string}>
+                                {columns?.map((column) => {
+                                    return (
+                                        <Td key={column}>
+                                            <Link href={`/dashboard/details/${name}/${data.id}`} style={{ textDecoration: 'none' }}>
+                                                {data[column]}
+                                            </Link>
+                                        </Td>
+                                    )
+                                })}
+
+                            </Tr>
+                        )
+                    })}
+                </Tbody>
+
+            </Table>
         </Box>
     )
 }
+
