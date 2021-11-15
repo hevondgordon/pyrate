@@ -8,10 +8,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@chakra-ui/react": "^1.6.12",
-    "@chakra-ui/switch": "^1.2.13",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "antd": "^4.16.13",
     "axios": "^0.24.0",
     "framer-motion": "^4",
     "next": "12.0.3",

@@ -1,8 +1,8 @@
-import TableComponent from "../../components/Table";
+import TableComponent from "../../components/BasicTable";
 export default function Dashboard() {
   return (
     <div>
-     <TableComponent/>
+      this is the home page
     </div>
   );
 }

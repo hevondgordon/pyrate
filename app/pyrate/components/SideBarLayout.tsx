@@ -24,9 +24,10 @@ import {
 } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { ROUTE as GET_SERVICES_ROUTE } from '../pages/api/services/index';
+import useSWR from 'swr'
+
 import { useRouter } from 'next/router'
 import { ReactText } from 'react';
-import useSWR from 'swr'
 import { fetcher, toTitleCase } from '../data/utils'
 
 interface LinkItemProps {

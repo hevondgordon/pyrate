@@ -1,20 +1,17 @@
-import '../styles/globals.css'
+import 'antd/dist/antd.css';
 import type { AppProps } from 'next/app'
-import { ChakraProvider } from "@chakra-ui/react"
 
-import SideBarLayout from '../components/SideBarLayout'
+import LocalSideBarLayout from '../components/LocalSideBarLayout'
 
 // import { useRouter } from 'next/router'
 
 function MyApp({ Component, pageProps }: AppProps) {
   // const router = useRouter()
   // const pathname = router.pathname
-    return <ChakraProvider>
-    <SideBarLayout>
+  return (
+    <LocalSideBarLayout>
       <Component {...pageProps} />
-    </SideBarLayout>
-  </ChakraProvider>
-  
+    </LocalSideBarLayout>)
 }
 
 export default MyApp
