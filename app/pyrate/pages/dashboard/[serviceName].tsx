@@ -21,12 +21,14 @@ const getTableColumns = (services: any) => {
 export default function DashboardContent() {
     const router = useRouter()
     const { serviceName } = router.query
-    const { data, error } = useSWR(GET_SERVICE_ROUTE(serviceName as string), fetcher)
+    const { data, error, mutate: refetchServices, } = useSWR(GET_SERVICE_ROUTE(serviceName as string), fetcher)
+
     const tableColumns = getTableColumns(data)
 
     return (
         <div>
             <BasicTable
+                refetch={refetchServices}
                 columns={tableColumns}
                 dataSource={data}
                 serviceName={serviceName as string} />

@@ -19,10 +19,11 @@ export interface TableProps {
     columns: string[],
     serviceName: string
     deleteAction?: () => void
+    refetch?: () => void
 }
 
 export default function BasicTable(props: TableProps) {
-    const { dataSource, columns, serviceName } = props
+    const { dataSource, columns, serviceName, refetch } = props
     const extendedColumns = [...columns, 'actions']
 
     // States
@@ -31,6 +32,7 @@ export default function BasicTable(props: TableProps) {
     const [modalContent, setModalContent] = useState('')
     const [isModalProcessing, setModalProcessing] = useState(false)
     const [deleteError, setDeleteError] = useState(null)
+    const [entityId, setEntityId] = useState('')
 
     // Helper Functions
     const openModalForDelete = () => {
@@ -54,10 +56,14 @@ export default function BasicTable(props: TableProps) {
                                 </a>
                             </Link>
                             <DeleteTwoTone
-
                                 style={{ cursor: 'pointer', fontSize: '20px' }}
                                 twoToneColor='#FF0000'
-                                onClick={() => openModalForDelete()}
+                                onClick={
+                                    () => {
+                                        setEntityId(record.id as string);
+                                        openModalForDelete()
+                                    }
+                                }
                             />
                         </Space>
                     )
@@ -72,13 +78,17 @@ export default function BasicTable(props: TableProps) {
     })
 
     const handleDelete = async (serviceName: string, serviceId: number) => {
-        setModalProcessing(true)
-        let response;
+        setModalVisible(true)
+        let response: { [key: string]: any } = {};
         try {
+            setModalProcessing(true)
             response = await handleServiceDelete(serviceName, serviceId)
+            setModalVisible(false)
+            refetch ? refetch() : null;
             setModalProcessing(false)
         } catch (error) {
-
+            setModalProcessing(false)
+            response.error = error
         }
         return response;
     }
@@ -87,22 +97,11 @@ export default function BasicTable(props: TableProps) {
         <div>
             <Table columns={parsedColumns} dataSource={addKeyToDataSource} />
             <GenericModal
-                // footer={
-                //     [
-                //         <Button key="back" onClick={async () => {
-                //             await handleDelete(serviceName as string, 1)
-                //         }}>
-                //             Return
-                //         </Button>,
-                //         <Button key="submit" type="primary" loading={loading} onClick={this.handleOk}>
-                //             Submit
-                //         </Button>,
-                //     ]}
                 okButtonProps={{
                     danger: deleteError
                 }}
                 handleOk={() => {
-                    handleDelete(serviceName as string, 1)
+                    handleDelete(serviceName as string, Number(entityId))
                 }}
                 handleCancel={() => {
                     setModalVisible(false)
