@@ -1,4 +1,4 @@
-import TableComponent from "../../components/BasicTable";
+import TableComponent from "../../components/GenericTable";
 export default function Dashboard() {
   return (
     <div>
