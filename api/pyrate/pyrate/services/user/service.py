@@ -21,6 +21,7 @@ def find_single_user(*args, **kwargs):
 
 def create_user():
     data = json.loads(request.data.decode('UTF-8'))
+    data.pop('id', None)
     email = data.get('email')
     user = User(
         **data
@@ -45,3 +46,13 @@ def update_user(*args, **kwargs):
     user.save_to_db()
     return Response(json.dumps(user.to_dict()),
                     status=200, mimetype="application/json")
+
+
+def delete_user(*args, **kwargs):
+    status = 200
+    try:
+        user = User.query.filter_by(id=kwargs.get('id')).first()
+        user.delete_from_db()
+    except Exception as e:
+        status = 500
+    return Response(status=status)
