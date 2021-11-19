@@ -1,4 +1,4 @@
-import BasicTable from "../../components/BasicTable";
+import GenericTable from "../../components/GenericTable";
 import GenericModal from "../../components/GenericModal";
 import { useState } from 'react'
 import { useRouter } from 'next/router'
@@ -27,7 +27,7 @@ export default function DashboardContent() {
 
     return (
         <div>
-            <BasicTable
+            <GenericTable
                 refetch={refetchServices}
                 columns={tableColumns}
                 dataSource={data}
