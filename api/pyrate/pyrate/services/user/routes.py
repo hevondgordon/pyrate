@@ -15,5 +15,9 @@ def routes():
         {'methods': ['PUT'],
          'path': '/<int:id>',
          'controller': 'update_user'
-         }
+         },
+        {'methods': ['DELETE'],
+         'path': '/<int:id>',
+         'controller': 'delete_user'
+         },
     ]

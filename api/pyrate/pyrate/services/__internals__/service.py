@@ -1,22 +1,28 @@
 import json
 import os
 import services
+import services.__internals__.utils as utils
+import services.__internals__.sql_alchemy_model_parser as sql_alchemy_model_parser
 
 from flask import Response, request
+
 
 RESTART_SERVICE_COMMAND = 'supervisorctl restart pyrate'
 
 
-def get_full_service_path(directory_name):
-    return os.path.join(services.__path__[0], directory_name)
-
-
-def get_service_resource(service_name, resource_name):
-    return os.path.join(get_full_service_path(service_name), resource_name)
+def get_columns_from_sql_alchemy_model(model_name):
+    model_path = utils.get_service_resource(model_name, 'model.py')
+    with open(model_path, 'r') as model_file:
+        model_file_contents = model_file.read()
+        columns = []
+        for line in model_file_contents.split('\n'):
+            if 'db.Column' in line:
+                columns.append(line)
+    return columns
 
 
 def create_service_file(service_name):
-    service_path = get_service_resource(service_name, 'service.py')
+    service_path = utils.get_service_resource(service_name, 'service.py')
     model_name = service_name.title()
     """ Creates a new service file """
     service_template = '''
@@ -65,6 +71,16 @@ def update_{service_name}(*args, **kwargs):
     return Response(json.dumps({entity}.to_dict()),
                     status=200, mimetype="application/json")
 
+
+def delete_{service_name}(*args, **kwargs):
+    status = 200
+    try:
+        {entity} = {model_name}.query.filter_by(id=kwargs.get('id')).first()
+        {entity}.delete_from_db()
+    except Exception as e:
+        status = 500
+    return Response(status=status)
+
     '''.format(service_name=service_name, model_name=model_name, entity=model_name.lower())
 
     with open(service_path, 'w') as service_file:
@@ -72,7 +88,7 @@ def update_{service_name}(*args, **kwargs):
 
 
 def create_route(service_name):
-    route_path = get_service_resource(service_name, 'routes.py')
+    route_path = utils.get_service_resource(service_name, 'routes.py')
     """ Creates a new route for the given service """
     print(route_path)
     route_template = '''
@@ -93,7 +109,11 @@ def routes():
         {'methods': ['PUT'],
         'path': '/<int:id>',
         'controller': 'update_{service_name}'
-        }
+        },
+        {'methods': ['DELETE'],
+        'path': '/<int:id>',
+        'controller': 'delete_{service_name}'
+        },
     ]
     '''.replace('{service_name}', service_name)
     try:
@@ -123,6 +143,10 @@ class {model_name}(db.Model, PyrateBaseModel):
         db.session.add(self)
         db.session.commit()
         return self
+    
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
 
     def __repr__(self):
         return self.id
@@ -131,7 +155,7 @@ class {model_name}(db.Model, PyrateBaseModel):
 
 
 def create_model(service_name, columns):
-    model_path = get_service_resource(service_name, 'model.py')
+    model_path = utils.get_service_resource(service_name, 'model.py')
     hydrated_model = hydrate_model(service_name, columns)
     with open(model_path, 'w') as model_file:
         model_file.write(hydrated_model)
@@ -139,7 +163,7 @@ def create_model(service_name, columns):
 
 def create_directory(directory_name):
     "create a new directory at the given path if it doesn't already exist"
-    service_path = get_full_service_path(directory_name)
+    service_path = utils.get_full_service_path(directory_name)
     try:
         if not os.path.exists(service_path):
             os.makedirs(service_path)
@@ -191,3 +215,10 @@ def generate_service():
     response = Response(json.dumps(response),
                         status=status, mimetype="application/json")
     return response
+
+
+def add_column_to_model():
+    column_data = json.loads(request.data.decode('UTF-8'))
+    new_columns = []
+    for column in column_data:
+        new_columns.append(sql_alchemy_model_parser.create_sql_alchemy_column(column))
