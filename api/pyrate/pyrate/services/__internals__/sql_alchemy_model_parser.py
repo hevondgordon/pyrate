@@ -1,8 +1,9 @@
 
+from typing import Mapping
 import services.__internals__.utils as utils
 
 
-def get_columns_from_sql_alchemy_model(model_name):
+def get_columns_from_sql_alchemy_model(model_name: str) -> list:
     model_path = utils.get_service_resource(model_name, 'model.py')
     with open(model_path, 'r') as model_file:
         model_file_contents = model_file.read()
@@ -13,7 +14,7 @@ def get_columns_from_sql_alchemy_model(model_name):
     return columns
 
 
-def create_sql_alchemy_column(column_details):
+def create_sql_alchemy_column(column_details: dict) -> str:
     '''takes a parameter in the format:
 
         column_details = {
@@ -44,14 +45,13 @@ def create_sql_alchemy_column(column_details):
     return f'{column_name} = db.Column({column_type}, {column_other_options_string})'
 
 
-def add_columns_to_sql_alchemy_model(model_name, new_columns):
+def add_columns_to_sql_alchemy_model(model_name: str, new_columns: list) -> None:
     model_path = utils.get_service_resource(model_name, 'model.py')
-    columns = get_columns_from_sql_alchemy_model(model_name)
-    formatted_new_columns = [f'    {column}' for column in new_columns]
+    existing_columns = get_columns_from_sql_alchemy_model(model_name)
 
-    columns.extend(formatted_new_columns)
-    columns_string = '\n'.join(columns)
-    formatted_columns_string = f'{columns_string}\n'
+    formatted_columns_string = format_columns_for_sql_alchemy_model(
+        existing_columns, new_columns)
+
     model_identifier = f'class {model_name.title()}'
     lines = get_model_lines_without_columns(model_path)
 
@@ -63,7 +63,17 @@ def add_columns_to_sql_alchemy_model(model_name, new_columns):
     write_lines_to_file(lines, model_path)
 
 
-def get_model_lines_without_columns(model_path):
+def format_columns_for_sql_alchemy_model(existing_columns: list, new_columns: list) -> str:
+    formatted_new_columns = [f'    {column}' for column in new_columns]
+    columns_without_duplication = [
+        column for column in existing_columns if column.split('=')[0].strip() not in ''.join(formatted_new_columns)
+    ]
+    columns_without_duplication.extend(formatted_new_columns)
+    columns_string = '\n'.join(columns_without_duplication)
+    return f'{columns_string}\n'
+
+
+def get_model_lines_without_columns(model_path: str) -> list:
     lines = []
     with open(model_path, 'r') as model_file:
         model_file_contents = model_file.readlines()
@@ -71,6 +81,6 @@ def get_model_lines_without_columns(model_path):
     return lines
 
 
-def write_lines_to_file(lines, file_path):
+def write_lines_to_file(lines: list, file_path: str) -> None:
     with open(file_path, 'w') as file:
         file.writelines(lines)
