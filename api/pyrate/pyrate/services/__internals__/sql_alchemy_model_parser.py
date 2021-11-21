@@ -1,5 +1,4 @@
 
-from posixpath import join
 import services.__internals__.utils as utils
 
 
@@ -18,18 +17,19 @@ def create_sql_alchemy_column(column_details):
     '''takes a parameter in the format:
 
         column_details = {
-            'name': 'id',
-            'type': 'db.Integer',
-            'other_options': {
-                'primary_key': False,
-                'nullable': True,
-                'unique': False,
+            "name": "id",
+            "type": "db.Integer",
+            "other_options": {
+                "primary_key": False,
+                "nullable": True,
+                "unique": False,
                 ...
             }
         }
 
         and returns a string in the format:
-        id = db.Column(db.Integer, primary_key=True, nullable=True, unique=False)
+        id = db.Column(db.Integer, primary_key=True,
+                       nullable=True, unique=False)
     '''
     column_name = column_details.get('name', None)
     column_type = column_details.get('type', None)
@@ -46,20 +46,31 @@ def create_sql_alchemy_column(column_details):
 
 def add_columns_to_sql_alchemy_model(model_name, new_columns):
     model_path = utils.get_service_resource(model_name, 'model.py')
-    existing_columns = get_columns_from_sql_alchemy_model(model_name)
-    all_columns = existing_columns.extend(new_columns)
-    columns_string = '\n\    '.join(all_columns)
+    columns = get_columns_from_sql_alchemy_model(model_name)
+    formatted_new_columns = [f'    {column}' for column in new_columns]
+
+    columns.extend(formatted_new_columns)
+    columns_string = '\n'.join(columns)
+    formatted_columns_string = f'{columns_string}\n'
     model_identifier = f'class {model_name.title()}'
-    lines = []
-    
-    with open(model_path, 'r') as model_file:
-        model_file_contents = model_file.readlines()
-        for line in model_file_contents:
-            if 'db.Column' not in line:  # ignore the db.Column lines so we can add our new ones
-                lines.append(line)
+    lines = get_model_lines_without_columns(model_path)
 
     class_definition_line = [
         line for line in lines if model_identifier in line][0]
 
     index_of_class_definition_line = lines.index(class_definition_line)
-    lines.insert(index_of_class_definition_line + 1, columns_string)
+    lines.insert(index_of_class_definition_line + 1, formatted_columns_string)
+    write_lines_to_file(lines, model_path)
+
+
+def get_model_lines_without_columns(model_path):
+    lines = []
+    with open(model_path, 'r') as model_file:
+        model_file_contents = model_file.readlines()
+        lines = [line for line in model_file_contents if 'db.Column' not in line]
+    return lines
+
+
+def write_lines_to_file(lines, file_path):
+    with open(file_path, 'w') as file:
+        file.writelines(lines)
