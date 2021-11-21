@@ -60,14 +60,26 @@ def generate_service():
 
 
 def add_column_to_model():
-    print(User.get_columns())
+    response = {
+        "success": True,
+    }
+    status = 200
     column_data = json.loads(request.data.decode('UTF-8'))
-    new_columns = []
-    for column in column_data:
-        new_columns.append(
-            sql_alchemy_model_parser.create_sql_alchemy_column(column))
-    sql_alchemy_model_parser.add_columns_to_sql_alchemy_model(
-        'user', new_columns)
-    response = Response(json.dumps({"success": True}),
-                        status=200, mimetype="application/json")
+    model = column_data.get('model', None)
+    columns = column_data.get('columns', [])
+    sql_alchemy_columns = [sql_alchemy_model_parser.create_sql_alchemy_column(
+        column) for column in columns]
+
+    try:
+        sql_alchemy_model_parser.add_columns_to_sql_alchemy_model(
+            model, sql_alchemy_columns
+        )
+    except Exception as e:
+        response['success'] = False
+        status = 500
+        response['error'] = {}
+        response['error']['message'] = str(e)
+
+    response = Response(json.dumps(response),
+                        status=status, mimetype="application/json")
     return response
