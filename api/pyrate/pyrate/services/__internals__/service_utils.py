@@ -1,9 +1,18 @@
 import os
-import services.__internals__.utils as utils
+import json
+import services
 
 
-def create_service_file(service_name):
-    service_path = utils.get_service_resource(service_name, 'service.py')
+def get_full_service_path(directory_name: str) -> str:
+    return os.path.join(services.__path__[0], directory_name)
+
+
+def get_service_resource(service_name: str, resource_name: str) -> str:
+    return os.path.join(get_full_service_path(service_name), resource_name)
+
+
+def create_service_file(service_name: str) -> None:
+    service_path = get_service_resource(service_name, 'service.py')
     model_name = service_name.title()
     """ Creates a new service file """
     service_template = '''
@@ -68,8 +77,8 @@ def delete_{service_name}(*args, **kwargs):
         service_file.write(service_template)
 
 
-def create_route(service_name):
-    route_path = utils.get_service_resource(service_name, 'routes.py')
+def create_route(service_name: str) -> None:
+    route_path = get_service_resource(service_name, 'routes.py')
     """ Creates a new route for the given service """
     print(route_path)
     route_template = '''
@@ -104,14 +113,21 @@ def routes():
         print('Error: Creating route. ' + service_name)
 
 
-def hydrate_model(model_name, columns):
+def hydrate_model(model_name: str, columns: list) -> str:
     """ Creates a new model for the given service """
 
     properties = ''
     properties += 'id = db.Column(db.Integer, primary_key=True)\n\t'
 
     for column in columns:
-        properties += f'{column.get("name")} = db.Column(db.{column.get("type")}, nullable={column.get("nullable", True)})\n\t'
+        other_options = column.get('other_options', {})
+        other_options_list = []
+        for key, value in other_options.items():
+            other_options_list.append(f'{key}={value}')
+        other_options_string = ', '.join(other_options_list)
+        other_options_string = ', ' + other_options_string if other_options_string else ''
+        properties += f'{column.get("name")} = db.Column(db.{column.get("type").title()}{other_options_string})\n\t'
+
     properties = properties.replace('\t', '    ')
     model_template = '''
 from db import db
@@ -135,16 +151,27 @@ class {model_name}(db.Model, PyrateBaseModel):
     return model_template
 
 
-def create_model(service_name, columns):
-    model_path = utils.get_service_resource(service_name, 'model.py')
+def create_model_definitions(service_name: str, columns: list) -> None:
+    json_file_path = get_service_resource(service_name, '__model__.json')
+    model = {
+        "service_name": service_name,
+        "columns": columns
+    }
+
+    with open(json_file_path, 'w') as json_definition_file:
+        json.dump(model, json_definition_file)
+
+
+def create_model(service_name: str, columns: list) -> None:
+    model_path = get_service_resource(service_name, 'model.py')
     hydrated_model = hydrate_model(service_name, columns)
     with open(model_path, 'w') as model_file:
         model_file.write(hydrated_model)
 
 
-def create_directory(directory_name):
+def create_directory(directory_name: str) -> None:
     "create a new directory at the given path if it doesn't already exist"
-    service_path = utils.get_full_service_path(directory_name)
+    service_path = get_full_service_path(directory_name)
     try:
         if not os.path.exists(service_path):
             os.makedirs(service_path)

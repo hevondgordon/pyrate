@@ -1,6 +1,5 @@
-
-from typing import Mapping
-import services.__internals__.utils as utils
+import services.__internals__.service_utils as utils
+import services.__internals__.model_utils as model_utils
 
 
 def get_columns_from_sql_alchemy_model(model_name: str) -> list:

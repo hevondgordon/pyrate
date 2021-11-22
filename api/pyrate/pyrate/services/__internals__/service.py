@@ -4,6 +4,7 @@ import services
 
 import services.__internals__.sql_alchemy_model_parser as sql_alchemy_model_parser
 import services.__internals__.service_utils as service_utils
+import services.__internals__.model_utils as model_utils
 
 from flask import Response, request
 
@@ -41,6 +42,7 @@ def generate_service():
             service_utils.create_model(service_name, columns)
             service_utils.create_service_file(service_name)
             service_utils.create_route(service_name)
+            service_utils.create_model_definitions(service_name, columns)
         except Exception as e:
             response['success'] = False
             status = 500
@@ -74,6 +76,8 @@ def add_column_to_model():
         sql_alchemy_model_parser.add_columns_to_sql_alchemy_model(
             model, sql_alchemy_columns
         )
+        model_utils.update_model_definition(model, columns)
+
     except Exception as e:
         response['success'] = False
         status = 500
