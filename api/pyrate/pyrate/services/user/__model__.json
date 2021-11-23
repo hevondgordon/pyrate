@@ -1,0 +1,48 @@
+{
+    "service_name": "user",
+    "columns": [
+        {
+            "model": "user",
+            "name": "first_name",
+            "type": "String",
+            "other_options": {
+                "nullable": "False"
+            }
+        },
+        {
+            "model": "user",
+            "name": "last_name",
+            "type": "String",
+            "other_options": {
+                "nullable": "False"
+            }
+        },
+        {
+            "model": "user",
+            "name": "username",
+            "type": "String",
+            "other_options": {
+                "nullable": "False",
+                "unique": "True"
+            }
+        },
+        {
+            "model": "user",
+            "name": "email",
+            "type": "String",
+            "other_options": {
+                "nullable": "False",
+                "unique": "True"
+            }
+        },
+        {
+            "model": "user",
+            "name": "password",
+            "type": "String",
+            "other_options": {
+                "nullable": "False",
+                "unique": "True"
+            }
+        }
+    ]
+}
