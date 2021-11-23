@@ -1,9 +1,40 @@
-import services.__internals__.service_utils as utils
-import services.__internals__.model_utils as model_utils
+from services.__internals__.commons import get_service_resource
+
+
+def hydrate_sql_alchemy_model(model_name: str, columns: list) -> str:
+    """ Creates a new model for the given service """
+
+    properties = ''
+    properties += 'id = db.Column(db.Integer, primary_key=True)\n'
+
+    sql_alchemy_columns = [create_sql_alchemy_column(
+        column) for column in columns]
+    properties += format_columns_with_newlines(sql_alchemy_columns)
+
+    model_template = '''
+from db import db
+from services.__internals__.models import PyrateBaseModel
+
+
+class {model_name}(db.Model, PyrateBaseModel):
+    {properties}
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
+    
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return self.id
+'''.replace('{model_name}', model_name.title()).replace('{properties}', properties)
+    return model_template
 
 
 def get_columns_from_sql_alchemy_model(model_name: str) -> list:
-    model_path = utils.get_service_resource(model_name, 'model.py')
+    model_path = get_service_resource(model_name, 'model.py')
     with open(model_path, 'r') as model_file:
         model_file_contents = model_file.read()
         columns = []
@@ -33,6 +64,8 @@ def create_sql_alchemy_column(column_details: dict) -> str:
     '''
     column_name = column_details.get('name', None)
     column_type = column_details.get('type', None)
+    if column_type.lower() == 'string':
+        column_type = f'{column_type}(100)'
     column_other_options = column_details.get('other_options', {})
     column_options_holder = []
 
@@ -41,15 +74,18 @@ def create_sql_alchemy_column(column_details: dict) -> str:
 
     column_other_options_string = ', '.join(column_options_holder)
 
-    return f'{column_name} = db.Column({column_type}, {column_other_options_string})'
+    return f'{column_name} = db.Column(db.{column_type}, {column_other_options_string})'
 
 
 def add_columns_to_sql_alchemy_model(model_name: str, new_columns: list) -> None:
-    model_path = utils.get_service_resource(model_name, 'model.py')
+    model_path = get_service_resource(model_name, 'model.py')
     existing_columns = get_columns_from_sql_alchemy_model(model_name)
 
-    formatted_columns_string = format_columns_for_sql_alchemy_model(
+    columns_without_duplication = remove_column_being_updated(
         existing_columns, new_columns)
+
+    formatted_columns_string = format_columns_with_newlines(
+        columns_without_duplication)
 
     model_identifier = f'class {model_name.title()}'
     lines = get_model_lines_without_columns(model_path)
@@ -62,14 +98,18 @@ def add_columns_to_sql_alchemy_model(model_name: str, new_columns: list) -> None
     write_lines_to_file(lines, model_path)
 
 
-def format_columns_for_sql_alchemy_model(existing_columns: list, new_columns: list) -> str:
-    formatted_new_columns = [f'    {column}' for column in new_columns]
+def remove_column_being_updated(existing_columns: list, new_columns: list):
     columns_without_duplication = [
-        column for column in existing_columns if column.split('=')[0].strip() not in ''.join(formatted_new_columns)
+        column for column in existing_columns if column.split('=')[0].strip() not in ''.join(new_columns)
     ]
-    columns_without_duplication.extend(formatted_new_columns)
-    columns_string = '\n'.join(columns_without_duplication)
-    return f'{columns_string}\n'
+    columns_without_duplication.extend(new_columns)
+
+    return columns_without_duplication
+
+
+def format_columns_with_newlines(columns: list) -> str:
+    formatted_columns = [f'    {column}' for column in columns]
+    return '\n'.join(formatted_columns) + '\n'
 
 
 def get_model_lines_without_columns(model_path: str) -> list:
