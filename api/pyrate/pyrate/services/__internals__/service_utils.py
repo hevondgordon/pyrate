@@ -1,14 +1,7 @@
 import os
 import json
-import services
-
-
-def get_full_service_path(directory_name: str) -> str:
-    return os.path.join(services.__path__[0], directory_name)
-
-
-def get_service_resource(service_name: str, resource_name: str) -> str:
-    return os.path.join(get_full_service_path(service_name), resource_name)
+from services.__internals__.commons import get_service_resource, get_full_service_path
+from services.__internals__.sql_alchemy_model_parser import hydrate_sql_alchemy_model
 
 
 def create_service_file(service_name: str) -> None:
@@ -113,46 +106,9 @@ def routes():
         print('Error: Creating route. ' + service_name)
 
 
-def hydrate_model(model_name: str, columns: list) -> str:
-    """ Creates a new model for the given service """
-
-    properties = ''
-    properties += 'id = db.Column(db.Integer, primary_key=True)\n\t'
-
-    for column in columns:
-        other_options = column.get('other_options', {})
-        other_options_list = []
-        for key, value in other_options.items():
-            other_options_list.append(f'{key}={value}')
-        other_options_string = ', '.join(other_options_list)
-        other_options_string = ', ' + other_options_string if other_options_string else ''
-        properties += f'{column.get("name")} = db.Column(db.{column.get("type").title()}{other_options_string})\n\t'
-
-    properties = properties.replace('\t', '    ')
-    model_template = '''
-from db import db
-from services.__internals__.models import PyrateBaseModel
-
-
-class {model_name}(db.Model, PyrateBaseModel):
-    {properties}
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-        return self
-    
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
-    def __repr__(self):
-        return self.id
-'''.replace('{model_name}', model_name.title()).replace('{properties}', properties)
-    return model_template
-
-
 def create_model_definitions(service_name: str, columns: list) -> None:
-    json_file_path = get_service_resource(service_name, '__model__.json')
+    json_file_path = get_service_resource(
+        service_name, '__model__.json')
     model = {
         "service_name": service_name,
         "columns": columns
@@ -164,7 +120,7 @@ def create_model_definitions(service_name: str, columns: list) -> None:
 
 def create_model(service_name: str, columns: list) -> None:
     model_path = get_service_resource(service_name, 'model.py')
-    hydrated_model = hydrate_model(service_name, columns)
+    hydrated_model = hydrate_sql_alchemy_model(service_name, columns)
     with open(model_path, 'w') as model_file:
         model_file.write(hydrated_model)
 

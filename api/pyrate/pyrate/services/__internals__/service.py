@@ -8,8 +8,6 @@ import services.__internals__.model_utils as model_utils
 
 from flask import Response, request
 
-from services.user.model import User
-
 
 RESTART_SERVICE_COMMAND = 'supervisorctl restart pyrate'
 
@@ -59,6 +57,10 @@ def generate_service():
     response = Response(json.dumps(response),
                         status=status, mimetype="application/json")
     return response
+
+
+def get_column_details():
+    pass
 
 
 def add_column_to_model():

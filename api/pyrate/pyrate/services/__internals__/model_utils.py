@@ -1,6 +1,6 @@
 
 import json
-from services.__internals__.service_utils import get_service_resource
+from services.__internals__.commons import get_service_resource
 
 
 def get_model_definition(model):
