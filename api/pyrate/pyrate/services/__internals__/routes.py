@@ -8,9 +8,13 @@ def routes():
          'path': '/get_external_services',
          'controller': 'get_external_services'
          },
-         {'methods': ['POST'],
+        {'methods': ['POST'],
          'path': '/add_column_to_model',
          'controller': 'add_column_to_model'
+         },
+        {'methods': ['GET'],
+         'path': '/get_column_details',
+         'controller': 'get_column_details'
          },
 
     ]

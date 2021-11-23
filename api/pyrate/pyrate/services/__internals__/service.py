@@ -60,7 +60,9 @@ def generate_service():
 
 
 def get_column_details():
-    pass
+    response = model_utils.get_model_definition('user')
+    return Response(json.dumps(response),
+                    status=200, mimetype="application/json")
 
 
 def add_column_to_model():
