@@ -14,6 +14,7 @@ psycopg2-binary = "^2.9.1"
 python-decouple = "^3.5"
 gunicorn = "^20.1.0"
 supervisor = "^4.2.2"
+Flask-Migrate = "^3.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
