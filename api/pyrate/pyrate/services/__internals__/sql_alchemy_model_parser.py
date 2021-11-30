@@ -4,12 +4,12 @@ from services.__internals__.commons import get_service_resource
 def hydrate_sql_alchemy_model(model_name: str, columns: list) -> str:
     """ Creates a new model for the given service """
 
-    properties = ''
-    properties += 'id = db.Column(db.Integer, primary_key=True)\n'
+    properties = '\n'
 
     sql_alchemy_columns = [create_sql_alchemy_column(
         column) for column in columns]
-    properties += format_columns_with_newlines(sql_alchemy_columns)
+
+    properties += format_columns_with_newlines_and_spaces(sql_alchemy_columns)
 
     model_template = '''
 from db import db
@@ -28,7 +28,7 @@ class {model_name}(db.Model, PyrateBaseModel):
         db.session.commit()
 
     def __repr__(self):
-        return self.id
+        return f'{self.id}'
 '''.replace('{model_name}', model_name.title()).replace('{properties}', properties)
     return model_template
 
@@ -84,7 +84,7 @@ def add_columns_to_sql_alchemy_model(model_name: str, new_columns: list) -> None
     columns_without_duplication = remove_column_being_updated(
         existing_columns, new_columns)
 
-    formatted_columns_string = format_columns_with_newlines(
+    formatted_columns_string = format_columns_with_newlines_and_spaces(
         columns_without_duplication)
 
     model_identifier = f'class {model_name.title()}'
@@ -107,9 +107,15 @@ def remove_column_being_updated(existing_columns: list, new_columns: list):
     return columns_without_duplication
 
 
-def format_columns_with_newlines(columns: list) -> str:
-    formatted_columns = [f'    {column}' for column in columns]
-    return '\n'.join(formatted_columns) + '\n'
+def format_columns_with_newlines_and_spaces(columns: list) -> str:
+    columns_formatted_with_spaces = [
+        f'    {column}' for column in columns if '    ' not in column]
+    _columns = [
+        column for column in columns if '    ' in column]
+
+    _columns.extend(columns_formatted_with_spaces)
+
+    return '\n'.join(_columns) + '\n'
 
 
 def get_model_lines_without_columns(model_path: str) -> list:
