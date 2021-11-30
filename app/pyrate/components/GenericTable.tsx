@@ -24,7 +24,7 @@ export interface TableProps {
 
 export default function GenericTable(props: TableProps) {
     const { dataSource, columns, serviceName, refetch } = props
-    const extendedColumns = [...columns, 'actions']
+    const extendedColumns = columns?.length > 0 ? [...columns, 'actions'] : []
 
     // States
     const [isModalVisible, setModalVisible] = useState(false)

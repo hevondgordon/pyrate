@@ -18,8 +18,7 @@ export default async function handler(
     const _serviceType = serviceType as string;
 
     if (_serviceType.toLowerCase() !== 'home') {
-        const _serviceType = serviceType as string
-        const response = await pyrateExternalAPIClient.get(serviceType as string);
+        const response = await pyrateExternalAPIClient.get(_serviceType);
         res.status(200).json(response.data)
     } else {
         res.status(200).json({
