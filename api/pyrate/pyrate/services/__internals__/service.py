@@ -60,9 +60,27 @@ def generate_service():
 
 
 def get_column_details():
-    response = model_utils.get_model_definition('user')
+    model = request.args.get('model', None)
+    print('the model is', model)
+    status = 200
+    response = {
+        'error': None,
+        'data': None,
+        'success': True,
+    }
+    if model is not None:
+        try:
+            response['data'] = model_utils.get_model_definition(model)
+        except FileNotFoundError as e:
+            status = 404
+            response['success'] = False
+            response['error'] = 'model does not exist'
+    else:
+        status = 400
+        response['error'] = 'Model name is required.'
+        response['success'] = False
     return Response(json.dumps(response),
-                    status=200, mimetype="application/json")
+                    status=status, mimetype="application/json")
 
 
 def add_column_to_model():
