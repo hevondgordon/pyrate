@@ -1,18 +1,8 @@
-import json
-from services.user import routes, service
-import services
-import importlib
-
-import services
-
-from flask import Flask
-from flask import Response
-import os
-
 from app import app
-
-from db import db
+from app import db
 from services.__internals__.pyrate import PyrateBase
+
+import importlib
 
 
 class Pyrate(PyrateBase):

@@ -12,7 +12,7 @@ def hydrate_sql_alchemy_model(model_name: str, columns: list) -> str:
     properties += format_columns_with_newlines_and_spaces(sql_alchemy_columns)
 
     model_template = '''
-from db import db
+from app import db
 from services.__internals__.models import PyrateBaseModel
 
 

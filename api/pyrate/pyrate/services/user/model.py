@@ -1,5 +1,5 @@
 
-from db import db
+from app import db
 from services.__internals__.models import PyrateBaseModel
 
 
@@ -15,7 +15,7 @@ class User(db.Model, PyrateBaseModel):
         db.session.add(self)
         db.session.commit()
         return self
-    
+
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()

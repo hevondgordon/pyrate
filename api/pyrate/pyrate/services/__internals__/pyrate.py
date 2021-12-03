@@ -4,8 +4,7 @@ import services
 import os
 
 from flask import Response
-from client_app import client_app
-from db import db
+from internal_app import internal_app
 
 
 class PyrateBase:
@@ -105,4 +104,4 @@ class PyrateBase:
         return self.app
 
 
-configured_client_app = PyrateBase(client_app).setup_internal_app()
+configured_internal_app = PyrateBase(internal_app).setup_internal_app()
