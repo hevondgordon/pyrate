@@ -10,6 +10,7 @@ class User(db.Model, PyrateBaseModel):
     username = db.Column(db.String(100), nullable=False, unique=True)
     email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False, unique=True)
+    test_column = db.Column(db.String(100), nullable=False, unique=True)
 
     def save_to_db(self):
         db.session.add(self)
