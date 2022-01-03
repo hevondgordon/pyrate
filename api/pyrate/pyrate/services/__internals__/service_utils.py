@@ -8,48 +8,88 @@ def create_service_file(service_name: str) -> None:
     service_path = get_service_resource(service_name, 'service.py')
     model_name = service_name.title()
     """ Creates a new service file """
+    
     service_template = '''
 import json
 from flask import Response, request
 from services.__internals__.query import create, get_all, update, delete, filter
 
 
+json_mimetype = "application/json"
+
 def find_all_{service_name}():
-    {entity}s = get_all('{model_name}')
-    print({entity}s)
+    response = []
+    status = 200
     
-    response = Response(json.dumps({entity}s),
-                        status=200, mimetype="application/json")
+    try:
+        {entity} = get_all('{model_name}')
+        response = Response(json.dumps({entity}),
+                        status=status, mimetype=json_mimetype)
+    except Exception as e:
+        status = 500
+        response = Response(json.dumps(e),
+                            status=status, mimetype=json_mimetype)
+    return response
+
+def find_single_{service_name}(**kwargs):
+    response = []
+    status = 200
+
+    try:
+        {entity} = filter('{model_name}', kwargs)
+        response = Response(json.dumps({entity}),
+                        status=status, mimetype=json_mimetype)
+    except Exception as e:
+        status = 500
+        response = Response(json.dumps(e),
+                            status=status, mimetype=json_mimetype)
     return response
 
 def create_{service_name}():
-    data = json.loads(request.data.decode('UTF-8'))
-    {entity} = create('{model_name}', data)
-    print({entity})
+    response = []
+    status = 200
 
-    response = Response(json.dumps({entity}),
-                        status=200, mimetype="application/json")
+    try:
+        data = json.loads(request.data.decode('UTF-8'))
+        {entity} = create('{model_name}', data)
+        response = Response(json.dumps({entity}),
+                        status=status, mimetype=json_mimetype)
+    except Exception as e:
+        status = 500
+        response = Response(json.dumps(e),
+                            status=status, mimetype=json_mimetype)
     return response
 
 
-def update_{service_name}():
-    data = json.loads(request.data.decode('UTF-8'))
-    filter_by = data['filter_by']
-    update_data = data['data']
-    {entity} = update({model_name}, filter_by, update_data)
+def update_{service_name}(**kwargs):
+    response = []
+    status = 200
 
-    response = Response(json.dumps({entity}),
-                        status=200, mimetype="application/json")
+    try:
+        data = json.loads(request.data.decode('UTF-8'))
+        update_data = data.get('data')
+        {entity} = update('{model_name}', kwargs, update_data)
+        response = Response(json.dumps({entity}),
+                        status=status, mimetype=json_mimetype)
+    except Exception as e:
+        status = 500
+        response = Response(json.dumps(e),
+                            status=status, mimetype=json_mimetype)
     return response
 
 
-def delete_{service_name}():
-    data = json.loads(request.data.decode('UTF-8'))
-    filter_by = data['filter_by']
-    {entity} = delete({model_name}, filter_by)
+def delete_{service_name}(**kwargs):
+    response = []
+    status = 200
 
-    response = Response(json.dumps({entity}),
-                        status=200, mimetype="application/json")
+    try:
+        {entity} = delete('{model_name}', kwargs)
+        response = Response(json.dumps({entity}),
+                        status=status, mimetype=json_mimetype)
+    except Exception as e:
+        status = 500
+        response = Response(json.dumps(e),
+                            status=status, mimetype=json_mimetype)
     return response
 
     '''.format(service_name=service_name, model_name=model_name, entity=model_name.lower())

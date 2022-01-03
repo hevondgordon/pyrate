@@ -26,7 +26,7 @@ class Pyrate(PyrateBase):
         db.create_all()
 
     def setup_app(self):
-        self.setup_db()
+        # self.setup_db()
         services = self.get_external_services()
         for service in services:
             self.add_service_to_app(service)

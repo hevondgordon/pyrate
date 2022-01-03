@@ -6,6 +6,8 @@ import services.__internals__.sql_alchemy_model_parser as sql_alchemy_model_pars
 import services.__internals__.service_utils as service_utils
 import services.__internals__.model_utils as model_utils
 
+from services.__internals__.query import create_model
+
 from flask import Response, request
 
 
@@ -37,10 +39,10 @@ def generate_service():
         try:
             service_name = service_name.lower()
             service_utils.create_directory(service_name)
-            service_utils.create_model(service_name, columns)
+            create_model(service_name, columns)
             service_utils.create_service_file(service_name)
             service_utils.create_route(service_name)
-            service_utils.create_model_definitions(service_name, columns)
+            service_utils.create_model_json_definitions(service_name, columns)
         except Exception as e:
             response['success'] = False
             status = 500
@@ -61,7 +63,6 @@ def generate_service():
 
 def get_column_details():
     model = request.args.get('model', None)
-    print('the model is', model)
     status = 200
     response = {
         'error': None,
