@@ -11,58 +11,46 @@ def create_service_file(service_name: str) -> None:
     service_template = '''
 import json
 from flask import Response, request
-from services.{service_name}.model import {model_name}
+from services.__internals__.query import create, get_all, update, delete, filter
 
 
-def find_{service_name}():
-    {entity}s = {model_name}.query.all()
-
-    json_{entity}s = [entity.to_dict() for entity in {entity}s]
-    response = Response(json.dumps(json_{entity}s),
+def find_all_{service_name}():
+    {entity}s = get_all('{model_name}')
+    print({entity}s)
+    
+    response = Response(json.dumps({entity}s),
                         status=200, mimetype="application/json")
     return response
-
-
-def find_single_{service_name}(*args, **kwargs):
-    {entity} = {model_name}.query.filter_by(**kwargs).first().to_dict()
-    return Response(json.dumps({entity}),
-                    status=200, mimetype="application/json")
-
 
 def create_{service_name}():
     data = json.loads(request.data.decode('UTF-8'))
-    {service_name} = {model_name}(
-        **data
-    )
+    {entity} = create('{model_name}', data)
+    print({entity})
 
-    {entity} = {service_name}.save_to_db()
-
-    response = Response(json.dumps({entity}.to_dict()),
+    response = Response(json.dumps({entity}),
                         status=200, mimetype="application/json")
     return response
 
 
-def update_{service_name}(*args, **kwargs):
+def update_{service_name}():
     data = json.loads(request.data.decode('UTF-8'))
-    {entity} = {model_name}.query.filter_by(id=kwargs.get('id')).first()
-    keys = dict.keys(data)
-    for key in keys:
-        if key == 'id':
-            continue
-        setattr({entity}, key, data[key])
-    {entity}.save_to_db()
-    return Response(json.dumps({entity}.to_dict()),
-                    status=200, mimetype="application/json")
+    filter_by = data['filter_by']
+    update_data = data['data']
+    {entity} = update({model_name}, filter_by, update_data)
+
+    response = Response(json.dumps({entity}),
+                        status=200, mimetype="application/json")
+    return response
 
 
-def delete_{service_name}(*args, **kwargs):
-    status = 200
-    try:
-        {entity} = {model_name}.query.filter_by(id=kwargs.get('id')).first()
-        {entity}.delete_from_db()
-    except Exception as e:
-        status = 500
-    return Response(status=status)
+def delete_{service_name}():
+    data = json.loads(request.data.decode('UTF-8'))
+    filter_by = data['filter_by']
+    {entity} = delete({model_name}, filter_by)
+
+    response = Response(json.dumps({entity}),
+                        status=200, mimetype="application/json")
+    return response
 
     '''.format(service_name=service_name, model_name=model_name, entity=model_name.lower())
 
@@ -79,7 +67,7 @@ def routes():
     return [
         {'methods': ['GET'],
         'path': '/',
-        'controller': 'find_{service_name}'
+        'controller': 'find_all_{service_name}'
         },
         {'methods': ['GET'],
         'path': '/<int:id>',
@@ -103,10 +91,10 @@ def routes():
         with open(route_path, 'w') as route_file:
             route_file.write(route_template)
     except FileNotFoundError:
-        print('Error: Creating route. ' + service_name)
+        print('Error Creating Route. ' + service_name)
 
 
-def create_model_definitions(service_name: str, columns: list) -> None:
+def create_model_json_definitions(service_name: str, columns: list) -> None:
     json_file_path = get_service_resource(
         service_name, '__model__.json')
     model = {
