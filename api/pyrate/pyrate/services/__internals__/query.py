@@ -21,7 +21,6 @@ def execute_query(query):
     cursor = connection.cursor()
     cursor.execute(query)
     connection.commit()
-    connection.close()
     return cursor
 
 
@@ -108,6 +107,14 @@ def format_data_into_expresion_for_db(data: dict):
     return string_values + non_string_values
 
 
+def format_data_from_cursor(cursor):
+    """
+    formats data from cursor
+    """
+    columns = [desc[0] for desc in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+
 def create(model_name: str, data: dict):
     """
     Create a model in the database
@@ -120,10 +127,10 @@ def create(model_name: str, data: dict):
             {}
         ) VALUES (
             {}
-        );
+        ) RETURNING *;
     """.format(model_name, columns, values)
     with execute_query(query) as cursor:
-        return cursor.fetchall()
+        return format_data_from_cursor(cursor)
 
 
 def get_all(model_name):
@@ -135,7 +142,7 @@ def get_all(model_name):
     """.format(model_name)
 
     with execute_query(query) as cursor:
-        return cursor.fetchall()
+        return format_data_from_cursor(cursor)
 
 
 def filter(model_name: str, filter_data: dict):
@@ -151,7 +158,7 @@ def filter(model_name: str, filter_data: dict):
     """.format(model_name, filter_param_string)
 
     with execute_query(query) as cursor:
-        return cursor.fetchall()
+        return format_data_from_cursor(cursor)
 
 
 def update(model_name: str, filter_data: dict, update_data: dict):
@@ -165,11 +172,11 @@ def update(model_name: str, filter_data: dict, update_data: dict):
     filter_data_string = ' AND '.join(formatted_filter_data)
 
     query = """
-        UPDATE {} SET {} WHERE {};
+        UPDATE {} SET {} WHERE {} RETURNING *;
     """.format(model_name, update_data_string, filter_data_string)
 
     with execute_query(query) as cursor:
-        return cursor.fetchall()
+        return format_data_from_cursor(cursor)
 
 
 def delete(model_name: str, filter_data: dict):
@@ -181,8 +188,8 @@ def delete(model_name: str, filter_data: dict):
     filter_data_string = ' AND '.join(formatted_data)
 
     query = """
-        DELETE FROM {} WHERE {};
+        DELETE FROM {} WHERE {} RETURNING *;
     """.format(model_name, filter_data_string)
 
     with execute_query(query) as cursor:
-        return cursor.fetchall()
+        return format_data_from_cursor(cursor)
