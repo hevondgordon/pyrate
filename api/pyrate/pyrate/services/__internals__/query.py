@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2.extras import RealDictCursor
 from services.__internals__.db_config import config_string
 
 
@@ -18,7 +19,7 @@ def execute_query(query):
     """
 
     connection = connect_to_db()
-    cursor = connection.cursor()
+    cursor = connection.cursor(cursor_factory=RealDictCursor)
     cursor.execute(query)
     connection.commit()
     return cursor
@@ -34,6 +35,7 @@ def create_model(model_name, model_fields):
             {}
         );
     """.format(model_name, create_model_fields(model_fields))
+    print(query)
     cursor = execute_query(query)
     cursor.close()
 
@@ -107,14 +109,6 @@ def format_data_into_expresion_for_db(data: dict):
     return string_values + non_string_values
 
 
-def format_data_from_cursor(cursor):
-    """
-    formats data from cursor
-    """
-    columns = [desc[0] for desc in cursor.description]
-    return [dict(zip(columns, row)) for row in cursor.fetchall()]
-
-
 def create(model_name: str, data: dict):
     """
     Create a model in the database
@@ -130,7 +124,7 @@ def create(model_name: str, data: dict):
         ) RETURNING *;
     """.format(model_name, columns, values)
     with execute_query(query) as cursor:
-        return format_data_from_cursor(cursor)
+        return cursor.fetchall()
 
 
 def get_all(model_name):
@@ -142,7 +136,7 @@ def get_all(model_name):
     """.format(model_name)
 
     with execute_query(query) as cursor:
-        return format_data_from_cursor(cursor)
+        return cursor.fetchall()
 
 
 def filter(model_name: str, filter_data: dict):
@@ -158,7 +152,7 @@ def filter(model_name: str, filter_data: dict):
     """.format(model_name, filter_param_string)
 
     with execute_query(query) as cursor:
-        return format_data_from_cursor(cursor)
+        return  cursor.fetchall()
 
 
 def update(model_name: str, filter_data: dict, update_data: dict):
@@ -176,7 +170,7 @@ def update(model_name: str, filter_data: dict, update_data: dict):
     """.format(model_name, update_data_string, filter_data_string)
 
     with execute_query(query) as cursor:
-        return format_data_from_cursor(cursor)
+        return cursor.fetchall()
 
 
 def delete(model_name: str, filter_data: dict):
@@ -192,4 +186,4 @@ def delete(model_name: str, filter_data: dict):
     """.format(model_name, filter_data_string)
 
     with execute_query(query) as cursor:
-        return format_data_from_cursor(cursor)
+        return cursor.fetchall()
