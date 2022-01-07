@@ -3,7 +3,7 @@ import { Menu } from 'antd';
 import { FolderOpenTwoTone, HomeTwoTone } from '@ant-design/icons';
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { toTitleCase } from '../data/utils';
+import * as lodash from 'lodash';
 export interface MenuProps {
     services: string[]
 }
@@ -34,7 +34,7 @@ export default function SidebarMenu(props: MenuProps) {
             {services?.map((service: string) => {
                 return (
                     <Menu.Item key={service} icon={<FolderOpenTwoTone />}>
-                        <Link href={`/dashboard/${service}/`}>{toTitleCase(service)}</Link>
+                        <Link href={`/dashboard/${service}/`}>{lodash.startCase(service)}</Link>
                     </Menu.Item>
                 )
             })}

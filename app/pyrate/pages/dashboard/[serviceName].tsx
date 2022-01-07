@@ -22,13 +22,11 @@ export default function DashboardContent() {
     const columnTitles: string[] = columnDetails?.data?.columns.map((column: _Column) => column.name);
 
     return (
-        <div>
-            <GenericTable
-                refetch={refetchServices}
-                columns={columnTitles}
-                dataSource={tableData}
-                serviceName={serviceName as string} />
-        </div>
+        <GenericTable
+            refetch={refetchServices}
+            columns={columnTitles}
+            dataSource={tableData}
+            serviceName={serviceName as string} />
     )
 }
 

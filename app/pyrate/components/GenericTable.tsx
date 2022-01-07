@@ -4,7 +4,7 @@ import { Table, Tag, Space, Button } from 'antd';
 import { EditTwoTone, DeleteTwoTone } from '@ant-design/icons';
 import { handleServiceDelete } from '../data/utils';
 import Link from 'next/link'
-
+import * as lodash from 'lodash';
 
 export interface Data {
     [key: string]: unknown
@@ -37,13 +37,13 @@ export default function GenericTable(props: TableProps) {
     // Helper Functions
     const openModalForDelete = () => {
         setModalTitle('Delete Service')
-        setModalContent(`Are you sure you want to delete an item from ${serviceName}?`)
+        setModalContent(`Are you sure you want to delete an item from ${lodash.startCase(serviceName)}?`)
         setModalVisible(true)
     }
 
     const parsedColumns = extendedColumns?.map((column) => {
         return {
-            title: column,
+            title: lodash.startCase(column),
             dataIndex: column,
             key: column,
             render: (text: string, record: Data) => {
@@ -73,7 +73,7 @@ export default function GenericTable(props: TableProps) {
         }
     })
 
-    const addKeyToDataSource = dataSource?.map((data, index) => {
+    const dataSourceWithKeys = dataSource?.map((data, index) => {
         return { ...data, key: index }
     })
 
@@ -95,7 +95,7 @@ export default function GenericTable(props: TableProps) {
 
     return (
         <div>
-            <Table columns={parsedColumns} dataSource={addKeyToDataSource} />
+            <Table columns={parsedColumns} dataSource={dataSourceWithKeys} />
             <GenericModal
                 okButtonProps={{
                     danger: deleteError

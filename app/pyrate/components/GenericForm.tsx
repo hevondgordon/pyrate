@@ -1,5 +1,6 @@
 import { Form, Input, InputNumber, Row, Col } from 'antd';
 import { _Column } from '../types';
+import * as lodash from 'lodash';
 
 export interface Field {
     label: string;
@@ -10,13 +11,14 @@ export interface GenericFormProps {
     columns: _Column[];
 }
 
+
 const generateColumnsAsFields = (columns: _Column[]) => {
     return columns?.map((column, index) => {
         return (
             <Col span={12} key={index}>
                 <Form.Item
                     name={column.name}
-                    label={column.name}
+                    label={lodash.startCase(column.name)}
                     rules={[
                         {
                             required: !!column.other_options?.nullable,
@@ -24,7 +26,7 @@ const generateColumnsAsFields = (columns: _Column[]) => {
                         },
                     ]}
                 >
-                    <Input placeholder={column.name} />
+                    <Input placeholder={lodash.startCase(column.name).toLowerCase()} />
                 </Form.Item>
             </Col>
         )
@@ -38,6 +40,7 @@ export default function GenericForm(props: GenericFormProps) {
     return (
         <div>
             <Form
+                layout="vertical"
                 form={form}
                 name="generic_form"
             >
