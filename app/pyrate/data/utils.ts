@@ -13,11 +13,11 @@ export const pyrateExternalAPIClient = axios.create({
   timeout: 1000,
 });
 
-export const toTitleCase = (str: string) => {
-  return str.split(' ').map(word => `${word.charAt(0).toUpperCase()}${word.slice(1)}`).join(' ');
-}
-
 export const handleServiceDelete = async (service: string, serviceId: number) => {
   const response = await axios.delete(`${DELETE_ROUTE}?service=${service}&serviceId=${serviceId}`)
   return response
+}
+
+export const shouldFetch = (...args: unknown[]) => {
+  return args.every(arg => arg !== null && arg !== undefined && arg !== '')
 }
