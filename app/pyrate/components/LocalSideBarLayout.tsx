@@ -8,9 +8,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ROUTE as GET_SERVICES_ROUTE } from '../pages/api/services/index';
 import useSWR from 'swr'
-import { fetcher, toTitleCase } from '../data/utils'
+import { fetcher } from '../data/utils'
 
-const { SubMenu } = Menu;
 
 export default function LocalSideBarLayout({ children }: { children: ReactNode }) {
     const [activeKey, setActiveKey] = useState(['Home']);
