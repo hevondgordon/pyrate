@@ -14,8 +14,10 @@ export default async function handler(
 ) {
     const { model } = req.query
     const _model = model as string;
+    let response = null
+    if (_model) {
+        response = await pyrateInternalAPIClient.get(`__internals__/get_column_details?model=${_model}`);
+        res.status(200).json(response.data)
 
-    const response = await pyrateInternalAPIClient.get(`__internals__/get_column_details?model=${_model}`);
-    console.log(response)
-    res.status(200).json(response.data)
+    }
 }
