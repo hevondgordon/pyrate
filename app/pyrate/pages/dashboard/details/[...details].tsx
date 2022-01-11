@@ -1,25 +1,39 @@
 import { useRouter } from 'next/router'
-import { fetcher } from '../../../data/utils'
-import { ROUTE as GET_COLUMN_DETAILS } from '../../api/services/getColumnDetails'
-import { Card } from 'antd';
+import { useState, useEffect } from 'react'
 import useSWR from 'swr'
+import { fetcher, shouldFetch } from '../../../data/utils'
+import { ROUTE as GET_COLUMN_DETAILS } from '../../api/services/getColumnDetails'
+import { ROUTE as GET_SERVICE_DETAILS } from '../../api/services/getServiceDetails'
 import GenericForm from '../../../components/GenericForm'
-import * as lodash from 'lodash';
+import DetailsCard from '../../../components/DetailsCard'
 
 
-export default function EntityDetail() {
+export default function ServiceDetail() {
     const router = useRouter()
-    const { entity, id, details } = router.query
+    const { details } = router.query
+    const [serviceName, setServiceName] = useState('')
+    const [model, setModel] = useState('')
+    const [entityId, setEntityId] = useState('')
     const {
         data: columnDetails,
-    } = useSWR(`${GET_COLUMN_DETAILS}?model=${details?.[0]}`, fetcher)
+    } = useSWR(shouldFetch(details) ? `${GET_COLUMN_DETAILS}?model=${model}` : null, fetcher)
+    const {
+        data: entityData,
+    } = useSWR(shouldFetch(details) ? `${GET_SERVICE_DETAILS}?model=${model}&id=${entityId}` : null, fetcher)
+
+    useEffect(() => {
+        setServiceName(details?.[0] as string)
+        setModel(details?.[0] as string)
+        setEntityId(details?.[1] as string)
+    }, [details])
 
     return (
-        <Card title={lodash.startCase(details?.[0])}>
-            <GenericForm
+        <DetailsCard title={serviceName} columnDetails={columnDetails?.data?.columns} entityData={entityData}>
+            {columnDetails && entityData && <GenericForm
+                data={entityData?.[0]}
                 columns={columnDetails?.data?.columns}
-            />
-        </Card>
+            />}
+        </DetailsCard>
 
     );
 }

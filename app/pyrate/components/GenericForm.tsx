@@ -1,5 +1,8 @@
 import { Form, Input, InputNumber, Row, Col } from 'antd';
-import { _Column } from '../types';
+import { useState, useEffect } from 'react';
+import {
+    _Column, GenericFormProps, GenericData
+} from '../types';
 import * as lodash from 'lodash';
 
 export interface Field {
@@ -7,17 +10,16 @@ export interface Field {
     type: string;
 
 }
-export interface GenericFormProps {
-    columns: _Column[];
-}
 
 
-const generateColumnsAsFields = (columns: _Column[]) => {
+const generateColumnsAsFields = (columns: _Column[], data: GenericData) => {
     return columns?.map((column, index) => {
+        console.log('the data is that ->', data ? data[column.name] : null);
+
         return (
             <Col span={12} key={index}>
                 <Form.Item
-                    name={column.name}
+
                     label={lodash.startCase(column.name)}
                     rules={[
                         {
@@ -26,7 +28,9 @@ const generateColumnsAsFields = (columns: _Column[]) => {
                         },
                     ]}
                 >
-                    <Input placeholder={lodash.startCase(column.name).toLowerCase()} />
+                    <Input
+                        value={data?.[column.name] as string}
+                        placeholder={data ? data[column.name] as string : 'empty'} />
                 </Form.Item>
             </Col>
         )
@@ -35,7 +39,7 @@ const generateColumnsAsFields = (columns: _Column[]) => {
 
 export default function GenericForm(props: GenericFormProps) {
     const [form] = Form.useForm();
-    const { columns } = props;
+    const { columns, data } = props;
 
     return (
         <div>
@@ -45,7 +49,7 @@ export default function GenericForm(props: GenericFormProps) {
                 name="generic_form"
             >
                 <Row gutter={16}>
-                    {generateColumnsAsFields(columns)}
+                    {data && columns && generateColumnsAsFields(columns, data)}
                 </Row>
             </Form>
 
@@ -53,5 +57,3 @@ export default function GenericForm(props: GenericFormProps) {
     )
 
 }
-
-// default function 
