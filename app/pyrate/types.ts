@@ -6,3 +6,23 @@ export interface _Column {
         [key: string]: unknown
     }
 }
+
+export interface GenericFormProps {
+    columns: _Column[];
+    data: {
+        [key: string]: unknown
+    }
+}
+
+export interface GenericData {
+    [key: string]: unknown
+}
+
+export interface detailsCardParams {
+    title: string
+    columnDetails: GenericData[]
+    entityData: {
+        [key: string]: unknown
+    }
+    children?: React.ReactNode
+}
