@@ -26,20 +26,7 @@ export default function GenericTable(props: TableProps) {
     const { dataSource, columns, serviceName, refetch } = props
     const extendedColumns = columns?.length > 0 ? [...columns, 'actions'] : []
 
-    // States
-    const [isModalVisible, setModalVisible] = useState(false)
-    const [modalTitle, setModalTitle] = useState('')
-    const [modalContent, setModalContent] = useState('')
-    const [isModalProcessing, setModalProcessing] = useState(false)
-    const [deleteError, setDeleteError] = useState(null)
-    const [entityId, setEntityId] = useState('')
 
-    // Helper Functions
-    const openModalForDelete = () => {
-        setModalTitle('Delete Service')
-        setModalContent(`Are you sure you want to delete an item from ${lodash.startCase(serviceName)}?`)
-        setModalVisible(true)
-    }
 
     const parsedColumns = extendedColumns?.map((column) => {
         return {
@@ -67,12 +54,6 @@ export default function GenericTable(props: TableProps) {
                                 <DeleteTwoTone
                                     style={{ cursor: 'pointer', fontSize: '20px' }}
                                     twoToneColor='#FF0000'
-                                    onClick={
-                                        () => {
-                                            setEntityId(record.id as string);
-                                            openModalForDelete()
-                                        }
-                                    }
                                 />
                             </Popconfirm>
 
