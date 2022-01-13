@@ -1,6 +1,6 @@
 import GenericModal from './GenericModal';
 import { useState } from 'react';
-import { Table, Tag, Space, Button } from 'antd';
+import { Table, Tag, Space, Button, Popconfirm } from 'antd';
 import { EditTwoTone, DeleteTwoTone } from '@ant-design/icons';
 import { handleServiceDelete } from '../data/utils';
 import Link from 'next/link'
@@ -55,16 +55,27 @@ export default function GenericTable(props: TableProps) {
                                     <EditTwoTone twoToneColor="#77D970" style={{ fontSize: '20px' }} />
                                 </a>
                             </Link>
-                            <DeleteTwoTone
-                                style={{ cursor: 'pointer', fontSize: '20px' }}
-                                twoToneColor='#FF0000'
-                                onClick={
-                                    () => {
-                                        setEntityId(record.id as string);
-                                        openModalForDelete()
+
+                            <Popconfirm
+                                icon={<DeleteTwoTone twoToneColor='red' />}
+                                placement="bottom"
+                                title={`delete ${lodash.startCase(serviceName).toLowerCase()} with id ${record.id}?`}
+                                onConfirm={async () => { await handleDelete(serviceName, record.id as number) }}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <DeleteTwoTone
+                                    style={{ cursor: 'pointer', fontSize: '20px' }}
+                                    twoToneColor='#FF0000'
+                                    onClick={
+                                        () => {
+                                            setEntityId(record.id as string);
+                                            openModalForDelete()
+                                        }
                                     }
-                                }
-                            />
+                                />
+                            </Popconfirm>
+
                         </Space>
                     )
                 }
@@ -78,16 +89,11 @@ export default function GenericTable(props: TableProps) {
     })
 
     const handleDelete = async (serviceName: string, serviceId: number) => {
-        setModalVisible(true)
         let response: { [key: string]: any } = {};
         try {
-            setModalProcessing(true)
             response = await handleServiceDelete(serviceName, serviceId)
-            setModalVisible(false)
             refetch ? refetch() : null;
-            setModalProcessing(false)
         } catch (error) {
-            setModalProcessing(false)
             response.error = error
         }
         return response;
@@ -96,21 +102,7 @@ export default function GenericTable(props: TableProps) {
     return (
         <div>
             <Table columns={parsedColumns} dataSource={dataSourceWithKeys} />
-            <GenericModal
-                okButtonProps={{
-                    danger: deleteError
-                }}
-                handleOk={() => {
-                    handleDelete(serviceName as string, Number(entityId))
-                }}
-                handleCancel={() => {
-                    setModalVisible(false)
-                }}
-                visible={isModalVisible}
-                title={modalTitle}
-                confirmLoading={isModalProcessing}
-                content={modalContent}
-            />
+
 
         </div>
     )

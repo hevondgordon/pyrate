@@ -19,5 +19,6 @@ export const handleServiceDelete = async (service: string, serviceId: number) =>
 }
 
 export const shouldFetch = (...args: unknown[]) => {
-  return args.every(arg => arg !== null && arg !== undefined && arg !== '')
+  const shouldFetch = args.every(arg => arg !== null && arg !== undefined && arg !== '')
+  return shouldFetch;
 }
