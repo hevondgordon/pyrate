@@ -42,7 +42,5 @@ export default function DetailsCard(props: detailsCardParams) {
 
 
         </div>
-
-
     );
 }

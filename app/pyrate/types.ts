@@ -25,4 +25,11 @@ export interface detailsCardParams {
         [key: string]: unknown
     }
     children?: React.ReactNode
+    onUpdate?: (data: GenericData) => void
+}
+
+export interface UpdateAndDeleteButtonParams {
+    serviceName: string
+    recordId: number
+    fetcher?: Function
 }

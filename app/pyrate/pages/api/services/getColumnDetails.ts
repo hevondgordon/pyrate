@@ -1,16 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { pyrateInternalAPIClient } from '../../../data/utils'
+import { GenericData } from '../../../types';
 
 export const ROUTE = `/api/services/getColumnDetails/`
 
-type Data = {
-    name: string
-}
-
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<Data>
+    res: NextApiResponse<GenericData>
 ) {
     const { model } = req.query
     const _model = model as string;

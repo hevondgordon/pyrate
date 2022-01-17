@@ -1,18 +1,15 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { pyrateExternalAPIClient } from '../../../data/utils'
+import { GenericData } from '../../../types'
 
 export const ROUTE = (serviceType: string) => {
     return `/api/services/${serviceType}/`
 }
 
-type Data = {
-    name: string
-}
-
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<Data>
+    res: NextApiResponse<GenericData>
 ) {
     const { serviceType } = req.query
     const _serviceType = serviceType as string;
