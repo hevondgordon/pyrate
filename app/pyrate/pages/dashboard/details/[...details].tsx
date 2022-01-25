@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import { fetcher, shouldFetch, handleServiceUpdate } from '../../../data/utils'
 import { ROUTE as GET_COLUMN_DETAILS_ROUTE } from '../../api/services/getColumnDetails'
 import { ROUTE as GET_SERVICE_DETAILS_ROUTE } from '../../api/services/getServiceDetails'
-import DetailsCard from '../../../components/DetailsCardForm'
+import DetailsCardForm from '../../../components/DetailsCardForm'
 import { GenericData, _Column } from '../../../types'
 
 
@@ -14,7 +14,6 @@ export default function ServiceDetail() {
     const [serviceName, setServiceName] = useState('')
     const [model, setModel] = useState('')
     const [entityId, setEntityId] = useState('')
-    const [readyToSave, setReadyToSave] = useState(false)
 
     const onSave = async (data: GenericData) => {
         await handleServiceUpdate(serviceName, Number(entityId), data)
@@ -34,14 +33,11 @@ export default function ServiceDetail() {
     }, [details])
 
     return (
-        <DetailsCard title={serviceName}
+        <DetailsCardForm title={serviceName}
             columnDetails={columnDetails?.data?.columns as _Column[]}
             entityData={entityData}
-            setReadyToSave={setReadyToSave}
             serviceName={serviceName}
             serviceId={Number(entityId)}
-            columns={columnDetails?.data?.columns}
-            readyToSave={readyToSave}
             onSave={onSave}
         />
     );

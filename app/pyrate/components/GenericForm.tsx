@@ -1,4 +1,4 @@
-import { Form, Input, InputNumber, Row, Col } from 'antd';
+import { Form, Input, InputNumber, Row, Col, Button } from 'antd';
 import { useState, useEffect } from 'react';
 import {
     _Column, GenericFormProps, GenericData
@@ -30,10 +30,11 @@ const generateColumnsAsFields = (columns: _Column[], data: GenericData) => {
 
 export default function GenericForm(props: GenericFormProps) {
     const [form] = Form.useForm();
-    const { columns, data, readyToSave, onSave } = props;
+    const { columns, data, readyToSave, onSave, setReadyToSave } = props;
 
     if (readyToSave) {
         onSave ? onSave(form.getFieldsValue()) : null;
+        setReadyToSave ? setReadyToSave(false) : null; // reset the readyToSave state
     }
 
     return (
@@ -50,7 +51,9 @@ export default function GenericForm(props: GenericFormProps) {
 
                 <Row gutter={16}>
                     {data && columns && generateColumnsAsFields(columns, data)}
+
                 </Row>
+
             </Form>
 
         </div >

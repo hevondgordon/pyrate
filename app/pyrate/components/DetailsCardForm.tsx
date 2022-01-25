@@ -1,8 +1,8 @@
-import { Card, Button, Modal, Popconfirm } from 'antd';
+import { Card, Button, Popconfirm } from 'antd';
 import { useEffect, useState } from 'react';
-import { EditTwoTone, CheckSquareTwoTone, SaveTwoTone } from '@ant-design/icons';
+import { CheckSquareTwoTone, SaveTwoTone } from '@ant-design/icons';
 import * as lodash from 'lodash';
-import { DetailsCardParams, GenericData } from '../types'
+import { DetailsCardParams } from '../types'
 import GenericForm from './GenericForm';
 
 
@@ -11,11 +11,9 @@ export default function DetailsCardForm(props: DetailsCardParams) {
         title,
         columnDetails,
         entityData,
-        serviceName,
-        serviceId,
-        columns,
         onSave
     } = props
+
     const [buttonTitle, setButtonTitle] = useState('Save')
     const [cardTitle, setCardTitle] = useState('');
     const [readyToSave, setReadyToSave] = useState(false);
@@ -33,7 +31,7 @@ export default function DetailsCardForm(props: DetailsCardParams) {
                     placement="bottom"
                     title={`update ${cardTitle.toLowerCase()}?`}
                     onConfirm={() => {
-                        setReadyToSave ? setReadyToSave(true) : null
+                        setReadyToSave(true)
                     }}
                     okText="Yes"
                     cancelText="No"
@@ -49,12 +47,13 @@ export default function DetailsCardForm(props: DetailsCardParams) {
                 {columnDetails && entityData && <GenericForm
                     data={entityData}
                     columns={columnDetails}
+                    setReadyToSave={setReadyToSave}
                     readyToSave={readyToSave}
                     onSave={onSave}
                 />}
-            </Card>
+            </Card >
 
 
-        </div>
+        </div >
     );
 }

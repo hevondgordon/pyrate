@@ -16,6 +16,7 @@ export interface GenericFormProps {
     readyToSave?: boolean;
     serviceName?: string
     serviceId?: number
+    setReadyToSave?: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface GenericData {
@@ -32,9 +33,9 @@ export interface DetailsCardParams {
     serviceId?: number
     columns?: _Column[]
     children?: React.ReactNode
-    onUpdate?: (data: GenericData) => void
     readyToSave?: boolean
     onSave?: (data: GenericData) => void
+    onUpdate?: (data: GenericData) => void
     setReadyToSave?: Dispatch<SetStateAction<boolean>>
 }
 

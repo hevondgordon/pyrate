@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { ROUTE as DELETE_ROUTE } from '../pages/api/services/delete'
+import { ROUTE as UPDATE_ROUTE } from '../pages/api/services/update'
+import { GenericData } from '../types';
 export const fetcher = (input: RequestInfo, init: RequestInit) => fetch(input, init).then(res => res.json())
 
 
@@ -16,6 +18,11 @@ export const pyrateExternalAPIClient = axios.create({
 export const handleServiceDelete = async (service: string, serviceId: number) => {
   const response = await axios.delete(`${DELETE_ROUTE}?service=${service}&serviceId=${serviceId}`)
   return response
+}
+
+export const handleServiceUpdate = async (service: string, serviceId: number, data: GenericData) => {
+  const response = await axios.put(`${UPDATE_ROUTE}?service=${service}&serviceId=${serviceId}`, data)
+  return response;
 }
 
 export const shouldFetch = (...args: unknown[]) => {
