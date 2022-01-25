@@ -37,8 +37,11 @@ def find_single_{service_name}(**kwargs):
 
     try:
         {entity} = filter('{model_name}', kwargs)
-        response = Response(json.dumps({entity}),
-                        status=status, mimetype=json_mimetype)
+        if(len({entity}) > 0):
+            response = Response(json.dumps({entity}[0]))
+        else:
+            response = Response(json.dumps({entity}),
+                            status=status, mimetype=json_mimetype)
     except Exception as e:
         status = 500
         response = Response(json.dumps(e),
