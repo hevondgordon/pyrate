@@ -123,6 +123,7 @@ def create(model_name: str, data: dict):
             {}
         ) RETURNING *;
     """.format(model_name, columns, values)
+
     with execute_query(query) as cursor:
         return cursor.fetchall()
 

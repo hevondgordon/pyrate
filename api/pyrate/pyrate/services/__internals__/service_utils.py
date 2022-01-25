@@ -70,8 +70,7 @@ def update_{service_name}(**kwargs):
 
     try:
         data = json.loads(request.data.decode('UTF-8'))
-        update_data = data.get('data')
-        {entity} = update('{model_name}', kwargs, update_data)
+        {entity} = update('{model_name}', kwargs, data)
         response = Response(json.dumps({entity}),
                         status=status, mimetype=json_mimetype)
     except Exception as e:
