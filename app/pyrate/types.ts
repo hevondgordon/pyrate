@@ -1,10 +1,10 @@
+import { Dispatch, SetStateAction } from "react";
+
 export interface _Column {
-    model: string,
-    name: string,
-    type: string,
-    other_options: {
-        [key: string]: unknown
-    }
+    model?: string,
+    name?: string,
+    type?: string,
+
 }
 
 export interface GenericFormProps {
@@ -12,20 +12,30 @@ export interface GenericFormProps {
     data: {
         [key: string]: unknown
     }
+    onSave?: Function;
+    readyToSave?: boolean;
+    serviceName?: string
+    serviceId?: number
 }
 
 export interface GenericData {
     [key: string]: unknown
 }
 
-export interface detailsCardParams {
+export interface DetailsCardParams {
     title: string
-    columnDetails: GenericData[]
+    columnDetails: _Column[]
     entityData: {
         [key: string]: unknown
     }
+    serviceName?: string
+    serviceId?: number
+    columns?: _Column[]
     children?: React.ReactNode
     onUpdate?: (data: GenericData) => void
+    readyToSave?: boolean
+    onSave?: (data: GenericData) => void
+    setReadyToSave?: Dispatch<SetStateAction<boolean>>
 }
 
 export interface UpdateAndDeleteButtonParams {

@@ -14,23 +14,14 @@ export interface Field {
 
 const generateColumnsAsFields = (columns: _Column[], data: GenericData) => {
     return columns?.map((column, index) => {
-        console.log('the data is that ->', data ? data[column.name] : null);
-
         return (
             <Col span={12} key={index}>
                 <Form.Item
-
+                    name={column.name}
                     label={lodash.startCase(column.name)}
-                    rules={[
-                        {
-                            required: !!column.other_options?.nullable,
-                            message: column.name,
-                        },
-                    ]}
+
                 >
-                    <Input
-                        value={data?.[column.name] as string}
-                        placeholder={data ? data[column.name] as string : 'empty'} />
+                    <Input />
                 </Form.Item>
             </Col>
         )
@@ -39,21 +30,30 @@ const generateColumnsAsFields = (columns: _Column[], data: GenericData) => {
 
 export default function GenericForm(props: GenericFormProps) {
     const [form] = Form.useForm();
-    const { columns, data } = props;
+    const { columns, data, readyToSave, onSave } = props;
+
+    if (readyToSave) {
+        onSave ? onSave(form.getFieldsValue()) : null;
+    }
 
     return (
         <div>
             <Form
+                initialValues={data}
+                onValuesChange={(changedValues, allValues) => {
+                    console.log(changedValues, allValues)
+                }}
                 layout="vertical"
                 form={form}
                 name="generic_form"
             >
+
                 <Row gutter={16}>
                     {data && columns && generateColumnsAsFields(columns, data)}
                 </Row>
             </Form>
 
-        </div>
+        </div >
     )
 
 }
