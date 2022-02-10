@@ -6,9 +6,11 @@ import services.__internals__.sql_alchemy_model_parser as sql_alchemy_model_pars
 import services.__internals__.service_utils as service_utils
 import services.__internals__.model_utils as model_utils
 
-from services.__internals__.query import create_model
+from services.__internals__.query import create_model, drop_model
 
 from flask import Response, request
+
+import shutil
 
 
 RESTART_SERVICE_COMMAND = 'supervisorctl restart pyrate'
@@ -28,6 +30,23 @@ def get_external_services():
     return Response(json.dumps(external_services),
                     status=200, mimetype="application/json")
 
+def delete_service():
+    response = {'success': True}
+    status = 200
+    service_name = request.args.get('service', None)
+    try:
+        # remove directory
+        shutil.rmtree(os.path.join(services.__path__[0], service_name))
+        # remove model from db
+        drop_model(service_name)
+    except Exception as e:
+        status = 500
+        response['success'] = False
+        response['error'] = str(e)
+    return Response(json.dumps(response),
+                    status=status, mimetype="application/json")
+
+    
 
 def generate_service():
     data = json.loads(request.data.decode('UTF-8'))

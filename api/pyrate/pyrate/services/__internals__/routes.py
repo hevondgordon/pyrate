@@ -16,5 +16,9 @@ def routes():
          'path': '/get_column_details',
          'controller': 'get_column_details'
          },
+         {'methods': ['DELETE'],
+         'path': '/delete_service',
+         'controller': 'delete_service'
+         },
 
     ]
