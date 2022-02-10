@@ -1,9 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { pyrateInternalAPIClient } from '../../../data/utils'
+import { pyrateExternalAPIClient } from '../../../data/utils'
 import { GenericData } from '../../../types';
 
-export const ROUTE = `/api/services/delete/`;
+export const ROUTE = `/api/services/delete_item/`;
 
 type Data = {
     name: string
@@ -13,8 +13,8 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<GenericData>
 ) {
-    const { service } = req.query
-    const response = await pyrateInternalAPIClient.delete(`/__internals__/delete_service?service=${service}`);
+    const { service, serviceId } = req.query
+    const response = await pyrateExternalAPIClient.delete(`${service}/${serviceId}`);
     res.status(200).json(response.data)
 
 }

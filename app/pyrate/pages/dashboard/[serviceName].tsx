@@ -4,6 +4,7 @@ import { ROUTE as GET_COLUMN_DETAILS } from '../api/services/getColumnDetails'
 import { fetcher, handleServiceDelete } from '../../data/utils'
 import { _Column } from "../../types";
 import GenericTable from "../../components/GenericTable";
+import SettingsIcon from '../../components/SettingsIcon';
 import useSWR from 'swr'
 
 
@@ -21,12 +22,20 @@ export default function DashboardContent() {
 
     const columnTitles: string[] = columnDetails?.data?.columns.map((column: _Column) => column.name);
 
+    const onDeleteService = async () => {
+        await handleServiceDelete(serviceName as string)
+    }
+
     return (
-        <GenericTable
-            refetch={refetchServices}
-            columns={columnTitles}
-            dataSource={tableData}
-            serviceName={serviceName as string} />
+        <div>
+            <SettingsIcon onMenuItemSelected={onDeleteService}></SettingsIcon>
+            <GenericTable
+                refetch={refetchServices}
+                columns={columnTitles}
+                dataSource={tableData}
+                serviceName={serviceName as string} />
+        </div>
+
     )
 }
 

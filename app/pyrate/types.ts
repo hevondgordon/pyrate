@@ -7,6 +7,10 @@ export interface _Column {
 
 }
 
+export interface SettingsIconParams {
+    onMenuItemSelected: (selectedMenuItem: string) => void,
+}
+
 export interface GenericFormProps {
     columns: _Column[];
     data: {

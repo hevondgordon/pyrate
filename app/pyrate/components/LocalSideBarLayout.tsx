@@ -25,14 +25,13 @@ export default function LocalSideBarLayout({ children }: { children: ReactNode }
         }
     }
     return (
-        <Row gutter={2}>
-            <Col span={4}>
+        <Row gutter={2} style={{ background: '#F5F5F5', height: '100vh' }}>
+            <Col span={4} >
                 <Drawer mask={false} title={appName} placement="left" visible={true} closable={false}>
                     <SidebarMenu services={services} />
                 </Drawer>
             </Col>
             <Col span={19}>
-                <div style={{ 'height': '5px' }}></div>
                 {children}
             </Col>
         </Row>)

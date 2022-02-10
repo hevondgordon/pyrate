@@ -2,7 +2,7 @@ import GenericModal from './GenericModal';
 import { useState } from 'react';
 import { Table, Tag, Space, Button, Popconfirm } from 'antd';
 import { EditTwoTone, DeleteTwoTone } from '@ant-design/icons';
-import { handleServiceDelete } from '../data/utils';
+import { handleServiceItemDelete } from '../data/utils';
 import Link from 'next/link'
 import * as lodash from 'lodash';
 import { UpdateAndDeleteButtonParams } from '../types';
@@ -26,7 +26,7 @@ export interface TableProps {
 const handleDelete = async (serviceName: string, serviceId: number, refetch: Function) => {
     let response: { [key: string]: any } = {};
     try {
-        response = await handleServiceDelete(serviceName, serviceId)
+        response = await handleServiceItemDelete(serviceName, serviceId)
         refetch ? refetch() : null;
     } catch (error) {
         response.error = error

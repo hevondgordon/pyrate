@@ -1,6 +1,6 @@
-import { ReactNode, ReactText, useEffect, useState } from 'react';
-import { Menu } from 'antd';
-import { FolderOpenTwoTone, HomeTwoTone } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import { Menu, Button, Divider } from 'antd';
+import { FolderOpenTwoTone, HomeTwoTone, PlusSquareTwoTone } from '@ant-design/icons';
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import * as lodash from 'lodash';
@@ -28,9 +28,14 @@ export default function SidebarMenu(props: MenuProps) {
             selectedKeys={selectedDefault}
             theme='light'
 
-        >    <Menu.Item key={'home'} icon={<HomeTwoTone />}>
-                <Link href={`/dashboard/`}>Home</Link>
+        >
+            <Menu.Item key={'new-model'} icon={<PlusSquareTwoTone twoToneColor='lightgreen' style={{ fontSize: '16px' }} />}>
+                <Link href={`/dashboard/model/create/`} passHref>
+                    Create Model
+                </Link>
             </Menu.Item>
+            <Divider />
+
             {services?.map((service: string) => {
                 return (
                     <Menu.Item key={service} icon={<FolderOpenTwoTone />}>
