@@ -11,6 +11,6 @@ export default async function handler(
 ) {
   const response = await pyrateInternalAPIClient.get('/__internals__/get_external_services');
   console.log(response.data);
-  
+
   res.status(200).json(response.data)
 }

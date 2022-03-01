@@ -1,60 +1,28 @@
-import GenericModal from './GenericModal';
-import { useState } from 'react';
-import { Table, Tag, Space, Button, Popconfirm } from 'antd';
+import { Table, Space, Popconfirm } from 'antd';
 import { EditTwoTone, DeleteTwoTone } from '@ant-design/icons';
-import { handleServiceItemDelete } from '../data/utils';
 import Link from 'next/link'
 import * as lodash from 'lodash';
-import { UpdateAndDeleteButtonParams } from '../types';
+import { GenericData, TableProps, UpdateAndDeleteButtonParams } from '../types';
+import { GENERIC_TABLE_UPDATE_AND_DELETE } from '../data/constants';
 
-export interface Data {
-    [key: string]: unknown
-}
+const UpdateAndDeleteButtons = (props: UpdateAndDeleteButtonParams) => {
 
-export interface TableData {
-    [key: string]: string | number | Data
-}
-
-export interface TableProps {
-    dataSource: TableData[],
-    columns: string[],
-    serviceName: string
-    deleteAction?: () => void
-    refetch?: () => void
-}
-
-const handleDelete = async (serviceName: string, serviceId: number, refetch: Function) => {
-    let response: { [key: string]: any } = {};
-    try {
-        response = await handleServiceItemDelete(serviceName, serviceId)
-        refetch ? refetch() : null;
-    } catch (error) {
-        response.error = error
-    }
-    return response;
-}
-
-function UpdateAndDeleteButtons(props: UpdateAndDeleteButtonParams) {
-
-    const { serviceName, recordId, fetcher } = props;
+    const { deleteAction, callbackArgs, serviceName, updateLinkConstructor } = props;
     return (
         <Space size="middle">
-            <Link href={`/dashboard/details/${serviceName}/${recordId}`}>
+            {updateLinkConstructor && <Link href={updateLinkConstructor(callbackArgs, serviceName)}>
                 <a>
                     <EditTwoTone twoToneColor="#77D970" style={{ fontSize: '20px' }} />
                 </a>
             </Link>
+            }
 
-            <Popconfirm
+            {deleteAction && <Popconfirm
                 icon={<DeleteTwoTone twoToneColor='red' />}
                 placement="bottom"
-                title={`delete ${lodash.startCase(serviceName).toLowerCase()} with id ${recordId}?`}
+                title={`Confirm Delete ${serviceName} record`}
                 onConfirm={async () => {
-                    await handleDelete(
-                        serviceName,
-                        recordId as number,
-                        fetcher as Function
-                    )
+                    await deleteAction(callbackArgs)
                 }}
                 okText="Yes"
                 cancelText="No"
@@ -63,29 +31,29 @@ function UpdateAndDeleteButtons(props: UpdateAndDeleteButtonParams) {
                     style={{ cursor: 'pointer', fontSize: '20px' }}
                     twoToneColor='#FF0000'
                 />
-            </Popconfirm>
+            </Popconfirm>}
 
         </Space>
     )
 }
 
 export default function GenericTable(props: TableProps) {
-    const { dataSource, columns, serviceName, refetch } = props
-    const extendedColumns = columns?.length > 0 ? [...columns, 'actions'] : []
-
-
+    const { dataSource, columns, serviceName, deleteAction, updateLinkConstructor } = props
+    const extendedColumns = columns?.length > 0 ? [...columns, GENERIC_TABLE_UPDATE_AND_DELETE] : []
 
     const parsedColumns = extendedColumns?.map((column) => {
         return {
             title: lodash.startCase(column),
             dataIndex: column,
             key: column,
-            render: (text: string, record: Data) => {
-                if (column === 'actions') {
+            render: (text: string, record: GenericData) => {
+                if (column === GENERIC_TABLE_UPDATE_AND_DELETE) {
                     return <UpdateAndDeleteButtons
+                        updateLinkConstructor={updateLinkConstructor}
+                        deleteAction={deleteAction}
                         serviceName={serviceName}
-                        recordId={record.id as number}
-                        fetcher={refetch} />
+                        callbackArgs={record}
+                    />
                 }
                 return text
             }

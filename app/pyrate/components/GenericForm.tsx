@@ -19,7 +19,6 @@ const generateColumnsAsFields = (columns: _Column[], data: GenericData) => {
                 <Form.Item
                     name={column.name}
                     label={lodash.startCase(column.name)}
-
                 >
                     <Input />
                 </Form.Item>

@@ -16,7 +16,9 @@ export const pyrateExternalAPIClient = axios.create({
   timeout: 1000,
 });
 
-export const handleServiceItemDelete = async (service: string, serviceId: number) => {
+export const handleServiceItemDelete = async (...args: unknown[]) => {
+  const service = args[0] as string
+  const serviceId = args[1] as number
   const response = await axios.delete(`${DELETE_SERVICE_ENTRY_ROUTE}?service=${service}&serviceId=${serviceId}`)
   return response
 }

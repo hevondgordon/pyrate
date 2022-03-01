@@ -1,5 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
 
+export interface IMenuProviderContext {
+    menuItems: string[];
+    setMenuItems: Dispatch<SetStateAction<string[]>>;
+}
+
 export interface _Column {
     model?: string,
     name?: string,
@@ -21,6 +26,18 @@ export interface GenericFormProps {
     serviceName?: string
     serviceId?: number
     setReadyToSave?: Dispatch<SetStateAction<boolean>>;
+}
+
+export interface TableData {
+    [key: string]: string | number | GenericData
+}
+export interface TableProps {
+    dataSource: TableData[],
+    columns: string[],
+    serviceName: string
+    deleteAction?: (data: GenericData) => Promise<void>
+    updateLinkConstructor?: (data: GenericData, ...extra: unknown[]) => string
+    refetch?: () => void
 }
 
 export interface GenericData {
@@ -45,6 +62,7 @@ export interface DetailsCardParams {
 
 export interface UpdateAndDeleteButtonParams {
     serviceName: string
-    recordId: number
-    fetcher?: Function
+    callbackArgs: GenericData
+    deleteAction?: (args: GenericData) => void
+    updateLinkConstructor?: (args: GenericData, ...extra: unknown[]) => string
 }

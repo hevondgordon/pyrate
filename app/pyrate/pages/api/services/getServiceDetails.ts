@@ -15,6 +15,9 @@ export default async function handler(
 
     if (model && id) {
         response = await pyrateExternalAPIClient.get(`${model}/${id}`);
+        if (Array.isArray(response.data)) {
+            response.data = response.data[0];
+        }
         res.status(200).json(response.data)
     }
 }
