@@ -7,9 +7,14 @@ def connect_to_db():
     """
     Connect to the database
     """
+    conn = None
     _config_string = config_string()
-    conn = psycopg2.connect(_config_string)
-    conn.autocommit = True
+    try:
+        conn = psycopg2.connect(_config_string)
+        conn.autocommit = True
+    except Exception as e:
+        print(e)
+
     return conn
 
 
@@ -19,10 +24,16 @@ def execute_query(query):
     """
 
     connection = connect_to_db()
-    cursor = connection.cursor(cursor_factory=RealDictCursor)
-    cursor.execute(query)
-    connection.commit()
-    return cursor
+    if connection:
+        cursor = connection.cursor(cursor_factory=RealDictCursor)
+        try:
+            cursor.execute(query)
+            connection.commit()
+        except Exception as e:
+            print(e)
+        return cursor
+
+    raise Exception("Could not connect to database")
 
 
 def drop_model(model_name):
@@ -51,7 +62,6 @@ def create_model(model_name, model_fields):
     """.format(
         model_name, create_model_fields(model_fields)
     )
-    print(query)
     cursor = execute_query(query)
     cursor.close()
 
@@ -147,8 +157,12 @@ def create(model_name: str, data: dict):
         model_name, columns, values
     )
 
-    with execute_query(query) as cursor:
-        return cursor.fetchall()
+    try:
+        with execute_query(query) as cursor:
+            return cursor.fetchall()
+    except Exception as e:
+        print(e)
+        return []
 
 
 def get_all(model_name):
@@ -160,9 +174,12 @@ def get_all(model_name):
     """.format(
         model_name
     )
-
-    with execute_query(query) as cursor:
-        return cursor.fetchall()
+    try:
+        with execute_query(query) as cursor:
+            return cursor.fetchall()
+    except Exception as e:
+        print(e)
+        return []
 
 
 def filter(model_name: str, filter_data: dict):
@@ -179,8 +196,12 @@ def filter(model_name: str, filter_data: dict):
         model_name, filter_param_string
     )
 
-    with execute_query(query) as cursor:
-        return cursor.fetchall()
+    try:
+        with execute_query(query) as cursor:
+            return cursor.fetchall()
+    except Exception as e:
+        print(e)
+        return []
 
 
 def update(model_name: str, filter_data: dict, update_data: dict):
@@ -199,8 +220,12 @@ def update(model_name: str, filter_data: dict, update_data: dict):
         model_name, update_data_string, filter_data_string
     )
 
-    with execute_query(query) as cursor:
-        return cursor.fetchall()
+    try:
+        with execute_query(query) as cursor:
+            return cursor.fetchall()
+    except Exception as e:
+        print(e)
+        return []
 
 
 def delete(model_name: str, filter_data: dict):
@@ -217,5 +242,9 @@ def delete(model_name: str, filter_data: dict):
         model_name, filter_data_string
     )
 
-    with execute_query(query) as cursor:
-        return cursor.fetchall()
+    try:
+        with execute_query(query) as cursor:
+            return cursor.fetchall()
+    except Exception as e:
+        print(e)
+        return []
