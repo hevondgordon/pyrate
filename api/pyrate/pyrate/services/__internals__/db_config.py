@@ -3,16 +3,15 @@ import os
 
 load_dotenv()
 
-print("loaded", os.getenv("HOST"))
 
 CONFIG = {
-    "host": os.getenv("HOST"),
-    "port": os.getenv("PORT"),
-    "user": os.getenv("USER"),
-    "password": os.getenv("PASSWORD"),
-    "db": os.getenv("DB"),
+    "host": "db",
+    "port": os.getenv("POSTGRES_PORT"),
+    "user": os.getenv("POSTGRES_USER"),
+    "password": os.getenv("POSTGRES_PASSWORD"),
+    "db": os.getenv("POSTGRES_DB"),
 }
 
 
 def config_string():
-    return "postgresql://{user}:{password}@{host}:{port}/{db}".format(**CONFIG)
+    return "postgresql://{user}:{password}@db:{port}/{db}".format(**CONFIG)
