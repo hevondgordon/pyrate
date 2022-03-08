@@ -36,9 +36,9 @@ COPY . .
 RUN poetry config virtualenvs.create false --local
 RUN poetry install
 
-RUN python3 pyrate/client_wsgi.py
+WORKDIR /pyrate/pyrate
 
-EXPOSE 5001
-EXPOSE 5000
+CMD ["supervisord", "-n", "-c", "supervisord.conf"]
 
-CMD ["python3", "pyrate/wsgi.py"]
+EXPOSE 5001-5002
+
