@@ -1,7 +1,9 @@
 import importlib
+import json
 
 from app import app
 from db import db
+from flask import Response
 from services.__internals__.pyrate import PyrateBase
 
 
@@ -12,11 +14,21 @@ class Pyrate(PyrateBase):
         """
         services = self.get_external_services()
         for service in services:
-            if '__internals__' not in service:
+            if "__internals__" not in service:
                 importlib.import_module(
-                    'services.{service}.model'.format(
-                        service=service)
+                    "services.{service}.model".format(service=service)
                 )
+
+    def index(self):
+        return Response(
+            json.dumps(
+                {
+                    "message": "Welcome to Pyrate External Client!",
+                    "services": self.get_external_services(),
+                }
+            ),
+            mimetype="application/json",
+        )
 
     def setup_db(self):
         """
