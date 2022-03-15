@@ -39,7 +39,7 @@ const UpdateAndDeleteButtons = (props: UpdateAndDeleteButtonParams) => {
 
 export default function GenericTable(props: TableProps) {
     const { dataSource, columns, serviceName, deleteAction, updateLinkConstructor } = props
-    const extendedColumns = columns?.length > 0 ? [...columns, GENERIC_TABLE_UPDATE_AND_DELETE] : []
+    const extendedColumns = columns?.length > 0 ? [...columns, GENERIC_TABLE_UPDATE_AND_DELETE] : columns
 
     const parsedColumns = extendedColumns?.map((column) => {
         return {
