@@ -1,13 +1,12 @@
 import json
 import os
 import services
-
+import re
 import services.__internals__.sql_alchemy_model_parser as sql_alchemy_model_parser
 import services.__internals__.service_utils as service_utils
 import services.__internals__.model_utils as model_utils
 
 from services.__internals__.query import create_model, drop_model
-
 from flask import Response, request
 
 import shutil
@@ -46,7 +45,7 @@ def delete_service():
     return Response(json.dumps(response),
                     status=status, mimetype="application/json")
 
-    
+
 
 def generate_service():
     data = json.loads(request.data.decode('UTF-8'))
@@ -56,7 +55,7 @@ def generate_service():
     service_name = data.get('service_name', None)
     if service_name is not None:
         try:
-            service_name = service_name.lower()
+            service_name = service_utils.clean_service_name(service_name)
             service_utils.create_directory(service_name)
             create_model(service_name, columns)
             service_utils.create_service_file(service_name)

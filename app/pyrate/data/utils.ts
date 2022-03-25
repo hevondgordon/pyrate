@@ -7,12 +7,12 @@ export const fetcher = (input: RequestInfo, init: RequestInit) => fetch(input, i
 
 
 export const pyrateInternalAPIClient = axios.create({
-  baseURL: 'http://127.0.0.1:5001',
+  baseURL: 'http://127.0.0.1:6001',
   timeout: 1000,
 });
 
 export const pyrateExternalAPIClient = axios.create({
-  baseURL: 'http://127.0.0.1:5000',
+  baseURL: 'http://127.0.0.1:6002',
   timeout: 1000,
 });
 

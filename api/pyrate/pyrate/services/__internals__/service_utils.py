@@ -3,12 +3,21 @@ import json
 from services.__internals__.commons import get_service_resource, get_full_service_path
 from services.__internals__.sql_alchemy_model_parser import hydrate_sql_alchemy_model
 
+def clean_service_name(service_name: str) -> str:
+    clean_service_name = ''
+    for char in service_name.lower():
+        unicode_val = ord(char)
+        if unicode_val != 95 and (unicode_val < 97 or unicode_val > 122):
+            clean_service_name += '_'
+        else:
+            clean_service_name += char
+    return clean_service_name
 
 def create_service_file(service_name: str) -> None:
     service_path = get_service_resource(service_name, 'service.py')
     model_name = service_name.title()
     """ Creates a new service file """
-    
+
     service_template = '''
 import json
 from flask import Response, request
@@ -20,7 +29,7 @@ json_mimetype = "application/json"
 def find_all_{service_name}():
     response = []
     status = 200
-    
+
     try:
         {entity} = get_all('{model_name}')
         response = Response(json.dumps({entity}),
