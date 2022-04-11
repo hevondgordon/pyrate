@@ -1,13 +1,18 @@
-FROM node:16
+FROM node:16.14.2 as app-build
 
 WORKDIR /app
 
 COPY . .
 
-RUN yarn 
-RUN npx next build
+RUN npm i
 
-CMD ["yarn", "run", "start"]
+RUN npm run build
 
-EXPOSE 3000
+FROM nginx:1.21
+
+COPY --from=app-build /app/build usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
 
