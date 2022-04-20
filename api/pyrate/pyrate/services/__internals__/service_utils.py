@@ -2,6 +2,21 @@ import os
 import json
 from services.__internals__.commons import get_service_resource, get_full_service_path
 from services.__internals__.sql_alchemy_model_parser import hydrate_sql_alchemy_model
+from services.__internals__.env import CONFIG
+
+def restart_app_with_supervisor():
+    env = CONFIG.get('env')
+
+    # this assumes that you are using supervisor to manage gunicorm
+    RESTART_SERVICE_COMMAND = 'supervisorctl restart pyrate'
+    if env == 'dev':
+        print(
+            '''manually restart server to pick up new service...
+               this will get berrer in the future'''
+        )
+    elif env== 'prod':
+        os.system(RESTART_SERVICE_COMMAND)
+
 
 def clean_service_name(service_name: str) -> str:
     clean_service_name = ''

@@ -57,7 +57,7 @@ def generate_service():
         try:
             # ensure that the model is created before creating a folder
             model_created_in_db = create_model(service_name, columns)
-            print(model_created_in_db)
+            print("was model created successfully?...", model_created_in_db)
             if(model_created_in_db):
                 service_name = service_utils.clean_service_name(service_name)
                 service_utils.create_directory(service_name)
@@ -70,7 +70,7 @@ def generate_service():
             response['error'] = {}
             response['error']['message'] = str(e)
         else:
-            os.system(RESTART_SERVICE_COMMAND)
+            service_utils.restart_app_with_supervisor()
     else:
         status = 400
         response['success'] = False

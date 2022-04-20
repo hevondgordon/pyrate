@@ -11,4 +11,5 @@ CONFIG = {
     "password": os.getenv("POSTGRES_PASSWORD"),
     "db": os.getenv("POSTGRES_DB"),
     "sentry_endpoint": os.getenv("SENTRY_ENDPOINT"),
+    "env": os.getenv("CURRENT_DEPLOYMENT_ENVIRONMENT" )
 }

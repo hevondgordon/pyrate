@@ -1,0 +1,1 @@
+{"service_name": "gregorypark", "columns": [{"model": "black", "name": "field1", "type": "varchar", "other_options": {"nullable": "False"}}, {"model": "black", "name": "field2", "type": "varchar", "other_options": {"nullable": "False"}}, {"model": "black", "name": "other_id", "type": "varchar", "other_options": {"nullable": "False", "primary_key": "True"}}]}
