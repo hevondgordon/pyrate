@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { pyrateInternalAPIClient } from '../../../data/utils'
+import { pyrateAPIClient } from '../../../data/utils'
 import { GenericData } from '../../../types';
 
 export const ROUTE = `/api/services/getColumnDetails/`
@@ -13,7 +13,7 @@ export default async function handler(
     const _model = model as string;
     let response = null
     if (_model) {
-        response = await pyrateInternalAPIClient.get(`__internals__/get_column_details?model=${_model}`);
+        response = await pyrateAPIClient.get(`__internals__/get_column_details?model=${_model}`);
         res.status(200).json(response.data)
 
     }

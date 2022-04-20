@@ -40,5 +40,5 @@ WORKDIR /pyrate/pyrate
 
 CMD ["supervisord", "-n", "-c", "supervisord.conf"]
 
-EXPOSE 5001-5002
+EXPOSE 5002
 

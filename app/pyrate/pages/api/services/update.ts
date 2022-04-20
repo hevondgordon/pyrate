@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { pyrateExternalAPIClient } from '../../../data/utils'
+import { pyrateAPIClient } from '../../../data/utils'
 import { GenericData } from '../../../types'
 
 export const ROUTE = `/api/services/update/`
@@ -15,7 +15,7 @@ export default async function handler(
     let response = null;
 
     if (service && serviceId) {
-        response = await pyrateExternalAPIClient.put(`${service}/${serviceId}`, data);
+        response = await pyrateAPIClient.put(`${service}/${serviceId}`, data);
         res.status(200).json(response.data)
     }
 }

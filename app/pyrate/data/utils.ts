@@ -3,16 +3,13 @@ import { ROUTE as DELETE_SERVICE_ENTRY_ROUTE } from '../pages/api/services/delet
 import { ROUTE as DELETE_SERVICE_ROUTE } from '../pages/api/services/delete'
 import { ROUTE as UPDATE_ROUTE } from '../pages/api/services/update'
 import { GenericData } from '../types';
+import {PYRATE_API_HOST, PYRATE_API_PORT} from './constants'
 export const fetcher = (input: RequestInfo, init: RequestInit) => fetch(input, init).then(res => res.json())
 
 
-export const pyrateInternalAPIClient = axios.create({
-  baseURL: 'http://127.0.0.1:6001',
-  timeout: 1000,
-});
 
-export const pyrateExternalAPIClient = axios.create({
-  baseURL: 'http://127.0.0.1:6002',
+export const pyrateAPIClient = axios.create({
+  baseURL: `http://${PYRATE_API_HOST}:${PYRATE_API_PORT}`,
   timeout: 1000,
 });
 
