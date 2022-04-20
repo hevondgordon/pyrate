@@ -55,12 +55,15 @@ def generate_service():
     service_name = data.get('service_name', None)
     if service_name is not None:
         try:
-            service_name = service_utils.clean_service_name(service_name)
-            service_utils.create_directory(service_name)
-            create_model(service_name, columns)
-            service_utils.create_service_file(service_name)
-            service_utils.create_route(service_name)
-            service_utils.create_model_json_definitions(service_name, columns)
+            # ensure that the model is created before creating a folder
+            model_created_in_db = create_model(service_name, columns)
+            print(model_created_in_db)
+            if(model_created_in_db):
+                service_name = service_utils.clean_service_name(service_name)
+                service_utils.create_directory(service_name)
+                service_utils.create_service_file(service_name)
+                service_utils.create_route(service_name)
+                service_utils.create_model_json_definitions(service_name, columns)
         except Exception as e:
             response['success'] = False
             status = 500

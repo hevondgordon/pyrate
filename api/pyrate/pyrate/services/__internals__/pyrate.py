@@ -23,7 +23,7 @@ sentry_sdk.init(
     # something more human-readable.
     # release="myapp@1.0.0",
 )
-
+print(CONFIG.get("sentry_endpoint"))
 
 class PyrateBase:
     app = None
@@ -57,7 +57,6 @@ class PyrateBase:
             for package in os.listdir(services.__path__[0])
             if os.path.isdir(os.path.join(services.__path__[0], package))
             and package != "__pycache__"
-            and package != "__internals__"
         ]
 
     def get_internal_services(self):

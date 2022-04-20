@@ -31,6 +31,7 @@ def execute_query(query):
             connection.commit()
         except Exception as e:
             print(e)
+            return False
         return cursor
 
     raise Exception("Could not connect to database")
@@ -62,8 +63,12 @@ def create_model(model_name, model_fields):
     """.format(
         model_name, create_model_fields(model_fields)
     )
+
     cursor = execute_query(query)
-    cursor.close()
+    if cursor != False:
+        cursor.close()
+        return True
+    return cursor
 
 
 def create_model_fields(model_fields):
@@ -89,16 +94,16 @@ def create_model_field(model_field_data: dict):
     if nullable.lower() == "false":
         nullable = "NOT NULL"
 
-    if unique == "true":
+    if unique.lower() == "true":
         unique = "UNIQUE"
 
-    if default == "true":
+    if default.lower() == "true":
         default = "DEFAULT '{}'".format(default)
 
     if field_length is None:
         field_length = 255
 
-    if field_type == "varchar":
+    if field_type.lower() == "varchar":
         field_type = "varchar({})".format(field_length)
 
     return f"{field_name} {field_type} {nullable} {default} {unique}".strip()
