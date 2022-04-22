@@ -28,10 +28,12 @@ def execute_query(query):
         cursor = connection.cursor(cursor_factory=RealDictCursor)
         try:
             cursor.execute(query)
+            print("successfully executed query...")
             connection.commit()
+            print("successfully committed txn...")
         except Exception as e:
             print(e)
-            return False
+            raise Exception(e)
         return cursor
 
     raise Exception("Could not connect to database")
