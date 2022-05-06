@@ -26,14 +26,10 @@ def execute_query(query):
     connection = connect_to_db()
     if connection:
         cursor = connection.cursor(cursor_factory=RealDictCursor)
-        try:
-            cursor.execute(query)
-            print("successfully executed query...")
-            connection.commit()
-            print("successfully committed txn...")
-        except Exception as e:
-            print(e)
-            raise Exception(e)
+        cursor.execute(query)
+        print("successfully executed query...")
+        connection.commit()
+        print("successfully committed txn...")
         return cursor
 
     raise Exception("Could not connect to database")
@@ -67,10 +63,10 @@ def create_model(model_name, model_fields):
     )
 
     cursor = execute_query(query)
-    if cursor != False:
+    if cursor:
         cursor.close()
         return True
-    return cursor
+    return False
 
 
 def create_model_fields(model_fields):

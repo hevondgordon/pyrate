@@ -1,0 +1,8 @@
+# Commands to start on workspace startup
+tasks:
+  - init: sudo apt install python3.9
+    command: curl -sSL https://install.python-poetry.org | python3 -
+# Ports to expose on workspace startup
+ports:
+  - port: 5002
+    onOpen: open-preview
